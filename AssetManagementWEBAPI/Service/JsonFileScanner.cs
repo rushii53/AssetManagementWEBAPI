@@ -2,11 +2,11 @@
 
 namespace AssetManagementWEBAPI.Service
 {
-    public class JsonFileScanner:IFileScanner
+    public class JsonFileScanner
     {
-        public Task<List<GenericAssetData>>ParseFile(Stream stream)
+        /*public Task ScanFile()
         {
-            return null;
-        }
+            return;
+        }*/
     }
 }

@@ -1,3 +1,6 @@
+using AssetManagementWEBAPI.Repository;
+using AssetManagementWEBAPI.Service;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -8,7 +11,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 
-
+builder.Services.AddSingleton<IFileScanner>(option => new TextFileScanner("C:\\Users\\Hrishi\\Documents\\AssetFile.txt"));
+builder.Services.AddSingleton<IMachineRepository,MachineRepository>();
 
 var app = builder.Build();
 
