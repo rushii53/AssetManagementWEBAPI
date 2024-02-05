@@ -6,5 +6,7 @@ namespace AssetManagementWEBAPI.Repository
     {
         public List<Machine> GetAllMachines();  
         public Machine GetMachine(string machineName);
+        List<string> GetMachineNames(string assetName);
+        List<Machine> GetMachinesWithLatestAssets();
     }
 }

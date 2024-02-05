@@ -11,7 +11,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 
-builder.Services.AddSingleton<IFileScanner>(option => new TextFileScanner("C:\\Users\\Hrishi\\Documents\\AssetFile.txt"));
+builder.Services.AddSingleton<IFileScanner>(option => new TextFileScannerAndParser("C:\\Users\\Bart_rus.GLOBAL\\Documents\\AssetFile.txt"));
 builder.Services.AddSingleton<IMachineRepository,MachineRepository>();
 
 var app = builder.Build();

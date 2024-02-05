@@ -27,10 +27,16 @@ namespace AssetManagementWEBAPI.Controllers
             return _machineRepository.GetMachine(MachineName);
         }
 
-        [HttpPost]
-        public void SaveMachine(Machine machine)
-        {
-            return;
+        [HttpGet("asset/{assetName}")]
+        public List<string> GetMachineNames(string assetName) {
+            return _machineRepository.GetMachineNames(assetName);
         }
+
+        [HttpGet("machines/")]
+        public List<Machine> GetMachinesUsingAllLatestAssetVersions()
+        {
+            return _machineRepository.GetMachinesWithLatestAssets();
+        }
+
     }
 }
