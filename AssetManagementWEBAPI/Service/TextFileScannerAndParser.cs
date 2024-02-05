@@ -45,49 +45,7 @@ namespace AssetManagementWEBAPI.Service
 
             GlobalAppConstants.AppConstants.Machines = machines;
 
-            //Saving assets information in app constansts dictionary data
-            Dictionary<string,List<string>>MachineLists = new Dictionary<string,List<string>>();
-
-            foreach(var machine in machines)
-            {
-                foreach(var asset in machine.Asset)
-                {
-                    if(MachineLists.ContainsKey(asset.AssetName))
-                    {
-                        MachineLists.GetValueOrDefault(asset.AssetName).Add(machine.MachineName);
-                    }
-                    else
-                    {
-                        MachineLists[asset.AssetName] = new List<string>();
-                        MachineLists[asset.AssetName].Add(machine.MachineName);
-                    }
-                }
-            }
-            GlobalAppConstants.AppConstants.MachinesList = MachineLists;
-
-            //Saving latest versions of assets
-            Dictionary<string, string> AssetsLatestVersionsDictionary = new Dictionary<string, string>();
-            foreach (var machine in machines)
-            {
-                foreach (var asset in machine.Asset)
-                {
-                    if (AssetsLatestVersionsDictionary.ContainsKey(asset.AssetName))
-                    {
-                        string assetVersion = AssetsLatestVersionsDictionary[asset.AssetName];
-                        int version = int.Parse(assetVersion.Substring(1));
-
-                        int currentVersion = int.Parse(asset.AssetVersion.Substring(1));
-
-                        if(currentVersion>version)
-                            AssetsLatestVersionsDictionary[asset.AssetName]=asset.AssetVersion;
-                    }
-                    else
-                    {
-                        AssetsLatestVersionsDictionary[asset.AssetName] = asset.AssetVersion;
-                    }
-                }
-            }
-            GlobalAppConstants.AppConstants.AssetsLatestVersionsDictionary = AssetsLatestVersionsDictionary;
+            
         }
     }
 

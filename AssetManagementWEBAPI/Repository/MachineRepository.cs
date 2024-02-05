@@ -21,6 +21,26 @@ namespace AssetManagementWEBAPI.Repository
         }
         public List<string> GetMachineNames(string assetName)
         {
+            List<Machine> machines = GlobalAppConstants.AppConstants.Machines;
+
+            Dictionary<string, List<string>> MachineLists = new Dictionary<string, List<string>>();
+
+            foreach (var machine in machines)
+            {
+                foreach (var asset in machine.Asset)
+                {
+                    if (MachineLists.ContainsKey(asset.AssetName))
+                    {
+                        MachineLists.GetValueOrDefault(asset.AssetName).Add(machine.MachineName);
+                    }
+                    else
+                    {
+                        MachineLists[asset.AssetName] = new List<string>();
+                        MachineLists[asset.AssetName].Add(machine.MachineName);
+                    }
+                }
+            }
+
             if (GlobalAppConstants.AppConstants.MachinesList.ContainsKey(assetName))
             {
                 List<string>MachineLists = GlobalAppConstants.AppConstants.MachinesList[assetName].Select(
@@ -34,19 +54,43 @@ namespace AssetManagementWEBAPI.Repository
         {
             List<Machine> machines = GlobalAppConstants.AppConstants.Machines;
             List<Machine> result = new List<Machine>();
+
+            Dictionary<string, string> AssetsLatestVersionsDictionary = new Dictionary<string, string>();
+
+            foreach (var machine in machines)
+            {
+                foreach (var asset in machine.Asset)
+                {
+                    if (AssetsLatestVersionsDictionary.ContainsKey(asset.AssetName))
+                    {
+                        string assetVersion = AssetsLatestVersionsDictionary[asset.AssetName];
+                        int version = int.Parse(assetVersion.Trim().Substring(1));
+
+                        int currentVersion = int.Parse(asset.AssetVersion.Substring(1));
+
+                        if (currentVersion > version)
+                            AssetsLatestVersionsDictionary[asset.AssetName] = asset.AssetVersion;
+                    }
+                    else
+                    {
+                        AssetsLatestVersionsDictionary[asset.AssetName] = asset.AssetVersion;
+                    }
+                }
+            }
+
             foreach (Machine machine in machines)
             {
-                bool flag = false;
+                bool isAllNewVersions = true;
                 foreach(Asset asset in machine.Asset)
                 {
-                    string latestAssetVersion = GlobalAppConstants.AppConstants.AssetsLatestVersionsDictionary.GetValueOrDefault(asset.AssetName);
+                    string latestAssetVersion = AssetsLatestVersionsDictionary.GetValueOrDefault(asset.AssetName);
                     if(latestAssetVersion != asset.AssetVersion)
                     {
-                        flag = true;
+                        isAllNewVersions = false;
                         break;
                     }
                 }
-                if(!flag)
+                if(isAllNewVersions)
                 {
                     result.Add(machine);
                 }

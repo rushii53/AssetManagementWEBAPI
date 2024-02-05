@@ -1,5 +1,5 @@
 using AssetManagementWEBAPI.Models;
-
+using AssetManagementWEBAPI.Repository;
 namespace AssetManagementTEST
 {
     [TestClass]
@@ -18,8 +18,9 @@ namespace AssetManagementTEST
             machine.Asset.Add(asset1);
             machine.Asset.Add(asset2);  
             machine.Asset.Add(asset3);
-            
+
             //Test
+            
         }
     }
 }
