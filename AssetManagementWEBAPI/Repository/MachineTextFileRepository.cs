@@ -1,24 +1,19 @@
 ﻿using AssetManagementWEBAPI.Models;
+using Microsoft.Extensions.Options;
 
-
-namespace AssetManagementWEBAPI.Service
+namespace AssetManagementWEBAPI.Repository
 {
-    public class TextFileScannerAndParser : IFileScanner
+    public class MachineTextFileRepository:IMachineRepository
     {
-        private readonly string _filePath;
-
-        public TextFileScannerAndParser(string filePath)
-        {
-            _filePath = filePath;
-        }
-        public void ScanAndParseFile()
+        private readonly List<MachineModel> _machines;
+        public MachineTextFileRepository(IOptions<TextFileModel>options)
         {
             List<GenericAssetData> genericAssetDatas = new List<GenericAssetData>();
-           
-            using(var reader = new StreamReader(_filePath))
+
+            using (var reader = new StreamReader(options.Value.Path_2))
             {
                 string line;
-                while ((line = reader.ReadLine())!=null)
+                while ((line = reader.ReadLine()) != null)
                 {
                     string[] data = line.Split(',');
 
@@ -29,16 +24,16 @@ namespace AssetManagementWEBAPI.Service
                     genericAssetDatas.Add(new GenericAssetData(machineName, assetName, assetVersion));
                 }
             }
-
             //Saving machines app constants data
-            List<MachineModel> machines = genericAssetDatas.GroupBy(d => d.MachineName).Select(o => new MachineModel
+            _machines = genericAssetDatas.GroupBy(d => d.MachineName).Select(o => new MachineModel
             {
                 MachineName = o.Key,
                 Asset = o.Select(l => new AssetModel(l.AssetName, l.AssetVersion)).ToList()
             }).ToList();
-
-            GlobalAppConstants.AppConstants.Machines = machines;
+        }
+        public List<MachineModel> GetAllMachines()
+        {
+            return _machines;
         }
     }
-
 }

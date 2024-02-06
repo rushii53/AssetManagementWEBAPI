@@ -1,4 +1,3 @@
-using AssetManagementWEBAPI.DataContext;
 using AssetManagementWEBAPI.Models;
 using AssetManagementWEBAPI.Repository;
 using AssetManagementWEBAPI.Service;
@@ -12,12 +11,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.Configure<DBModel>(builder.Configuration.GetSection("AssetManagementDataStore"));
-
-builder.Services.AddSingleton<IFileScanner>(option => new TextFileScannerAndParser("C:\\Users\\Bart_rus.GLOBAL\\Documents\\AssetFile.txt"));
-builder.Services.AddSingleton<IMachineRepository,MachineRepository>();
+builder.Services.Configure<DBModel>(builder.Configuration.GetSection("MongoDB"));
+builder.Services.Configure<TextFileModel>(builder.Configuration.GetSection("TextFilePath"));
+builder.Services.AddSingleton<IMachineRepository,MachineTextFileRepository>();
 builder.Services.AddSingleton<IMachineService,MachineService>();
-builder.Services.AddSingleton<MongoDbAssetManagement>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

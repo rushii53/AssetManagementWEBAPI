@@ -6,28 +6,27 @@ namespace AssetManagementWEBAPI.Service
 {
     public class MachineService:IMachineService
     {
-        private readonly IMachineRepository _machineRepository;
+        private readonly List<MachineModel>?_machines;
 
         public MachineService(IMachineRepository machineRepository)
         {
-            _machineRepository = machineRepository;
+            _machines = machineRepository.GetAllMachines();
         }
 
         public List<MachineModel> GetAllMachines()
         {
-            return _machineRepository.GetAllMachines();
+            return _machines;
         }
         public MachineModel GetMachineByMachineName(string machineName)
         {
-            return _machineRepository.GetMachine(machineName);
+            return _machines.Where(m => m.MachineName == machineName).First();
         }
         public List<string> GetMachineNamesUsingThisAsset(string assetName)
         {
-            List<MachineModel> machines = _machineRepository.GetAllMachines();
 
             List<string>result = new List<string>();
 
-            foreach (var machine in machines)
+            foreach (var machine in _machines)
             {
                 foreach(var asset in machine.Asset)
                 {
@@ -40,13 +39,12 @@ namespace AssetManagementWEBAPI.Service
 
         public List<MachineModel> GetMachinesWithLatestAssets()
         {
-            List<MachineModel> machines = _machineRepository.GetAllMachines();
             List<MachineModel> result = new List<MachineModel>();
 
             //Creating dictionary which will store the latest version of respective assets
             Dictionary<string, string> AssetsLatestVersionsDictionary = new Dictionary<string, string>();
 
-            foreach (var machine in machines)
+            foreach (var machine in _machines)
             {
                 foreach (var asset in machine.Asset)
                 {
@@ -68,7 +66,7 @@ namespace AssetManagementWEBAPI.Service
             }
 
             //Traversing on each machine, which uses latest version of all the assets
-            foreach (var machine in machines)
+            foreach (var machine in _machines)
             {
                 bool isAllNewVersions = true;
                 foreach (var asset in machine.Asset)

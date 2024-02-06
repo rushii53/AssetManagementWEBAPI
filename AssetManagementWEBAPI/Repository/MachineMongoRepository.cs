@@ -1,31 +1,25 @@
-﻿using AssetManagementWEBAPI.DataContext;
-using AssetManagementWEBAPI.Entity;
-using AssetManagementWEBAPI.Models;
-using AssetManagementWEBAPI.Service;
-using Microsoft.AspNetCore.Mvc;
+﻿using AssetManagementWEBAPI.Models;
+using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
 namespace AssetManagementWEBAPI.Repository
 {
-    public class  MachineRepository: IMachineRepository
+    public class  MachineMongoRepository: IMachineRepository
     {
+       private readonly IMongoCollection<MachineModel> _machines;
        
-        private readonly IFileScanner _fileScanner;
-        public MachineRepository(IFileScanner fileScanner)
+        public MachineMongoRepository(IOptions<DBModel>options)
         {
-            _fileScanner = fileScanner;
-            fileScanner.ScanAndParseFile();
+            var MongoConnection = new MongoClient(options.Value.ConnectionString);
+            var MongoDatabase = MongoConnection.GetDatabase(options.Value.DatabaseName);
+            _machines = MongoDatabase.GetCollection<MachineModel>(options.Value.CollectionName);
         }
-        
         public List<MachineModel> GetAllMachines()
         {
-            return GlobalAppConstants.AppConstants.Machines;
+            List<MachineModel>machineModels = _machines.Find(_ => true).ToList();
+            return machineModels;
         }
-
-        public MachineModel GetMachine(string machineName)
-        {
-            return GlobalAppConstants.AppConstants.Machines.Where(machine=>machine.MachineName==machineName).FirstOrDefault();
-        }
+           
     }
 }
 

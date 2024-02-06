@@ -2,15 +2,15 @@
 {
     public class GenericAssetData
     {
-        public string MachineName { get; set; } 
-        public string AssetName { get; set; }
+        public string MachineName { get; set; }
         public string AssetVersion { get; set; }
+        public string AssetName { get; set; }
 
-
-        public GenericAssetData(string MachineName,string AssetName,string AssetVersion) {
-            this.AssetName = AssetName;
-            this.AssetVersion = AssetVersion;
-            this.MachineName = MachineName;
+        public GenericAssetData(string machineName, string assetName, string assetVersion)
+        {
+            MachineName = machineName;
+            AssetVersion = assetVersion;
+            AssetName = assetName;
         }
     }
 }

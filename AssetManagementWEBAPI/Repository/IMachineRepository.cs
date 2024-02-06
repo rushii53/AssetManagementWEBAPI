@@ -6,6 +6,5 @@ namespace AssetManagementWEBAPI.Repository
     public interface IMachineRepository
     {
         public List<MachineModel> GetAllMachines();  
-        public MachineModel GetMachine(string machineName);
     }
 }
