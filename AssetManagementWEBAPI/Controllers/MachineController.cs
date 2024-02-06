@@ -29,7 +29,7 @@ namespace AssetManagementWEBAPI.Controllers
 
         [HttpGet("asset/{assetName}")]
         public List<string> GetMachineNames(string assetName) {
-            return _machineRepository.GetMachineNames(assetName);
+            return _machineRepository.GetMachineNamesUsingThisAsset(assetName);
         }
 
         [HttpGet("machines/")]

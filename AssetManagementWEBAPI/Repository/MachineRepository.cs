@@ -19,31 +19,27 @@ namespace AssetManagementWEBAPI.Repository
         {
             return GlobalAppConstants.AppConstants.Machines.Where(data => data.MachineName == machineName).FirstOrDefault();
         }
-        public List<string> GetMachineNames(string assetName)
+        public List<string> GetMachineNamesUsingThisAsset(string assetName)
         {
             List<Machine> machines = GlobalAppConstants.AppConstants.Machines;
 
-            Dictionary<string, List<string>> MachineLists = new Dictionary<string, List<string>>();
+            Dictionary<string, List<string>> MachinesList = new Dictionary<string, List<string>>();
 
             foreach (var machine in machines)
             {
                 foreach (var asset in machine.Asset)
                 {
-                    if (MachineLists.ContainsKey(asset.AssetName))
+                    if (!MachinesList.ContainsKey(asset.AssetName))
                     {
-                        MachineLists.GetValueOrDefault(asset.AssetName).Add(machine.MachineName);
+                        MachinesList[asset.AssetName] = new List<string>();
                     }
-                    else
-                    {
-                        MachineLists[asset.AssetName] = new List<string>();
-                        MachineLists[asset.AssetName].Add(machine.MachineName);
-                    }
+                    MachinesList[asset.AssetName].Add(machine.MachineName);
                 }
             }
 
-            if (GlobalAppConstants.AppConstants.MachinesList.ContainsKey(assetName))
+            if (MachinesList.ContainsKey(assetName))
             {
-                List<string>MachineLists = GlobalAppConstants.AppConstants.MachinesList[assetName].Select(
+                List<string>MachineLists = MachinesList[assetName].Select(
                         machine=>machine).ToList();
                 return MachineLists;
             }

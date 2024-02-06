@@ -20,7 +20,7 @@ namespace AssetManagementWEBAPI.Service
             using(var reader = new StreamReader(_filePath))
             {
                 string line;
-                while ((line = await reader.ReadLinec())!=null)
+                while ((line = reader.ReadLine())!=null)
                 {
                     string[] data = line.Split(',');
 
@@ -36,11 +36,7 @@ namespace AssetManagementWEBAPI.Service
             List<Machine> machines = genericAssetDatas.GroupBy(d => d.MachineName).Select(o => new Machine
             {
                 MachineName = o.Key,
-                Asset = o.Select(l => new Asset
-                {
-                    AssetName = l.AssetName,
-                    AssetVersion = l.AssetVersion
-                }).ToList()
+                Asset = o.Select(l => new Asset(l.AssetName, l.AssetVersion)).ToList()
             }).ToList();
 
             GlobalAppConstants.AppConstants.Machines = machines;

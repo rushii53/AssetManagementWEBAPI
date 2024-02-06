@@ -4,6 +4,6 @@ namespace AssetManagementWEBAPI.Service
 {
     public interface IFileScanner
     {
-        public Task ScanAndParseFile();
+        public void ScanAndParseFile();
     }
 }
