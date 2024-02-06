@@ -33,10 +33,10 @@ namespace AssetManagementWEBAPI.Service
             }
 
             //Saving machines app constants data
-            List<Machine> machines = genericAssetDatas.GroupBy(d => d.MachineName).Select(o => new Machine
+            List<MachineModel> machines = genericAssetDatas.GroupBy(d => d.MachineName).Select(o => new MachineModel
             {
                 MachineName = o.Key,
-                Asset = o.Select(l => new Asset(l.AssetName, l.AssetVersion)).ToList()
+                Asset = o.Select(l => new AssetModel(l.AssetName, l.AssetVersion)).ToList()
             }).ToList();
 
             GlobalAppConstants.AppConstants.Machines = machines;

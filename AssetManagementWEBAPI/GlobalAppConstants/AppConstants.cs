@@ -4,6 +4,6 @@ namespace AssetManagementWEBAPI.GlobalAppConstants
 {
     public static class AppConstants
     {
-        public static List<Machine> Machines = new List<Machine>();
+        public static List<MachineModel>? Machines;
     }
 }
