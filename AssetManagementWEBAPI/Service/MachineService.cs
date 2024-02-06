@@ -1,8 +1,6 @@
-﻿using AssetManagementWEBAPI.DataContext;
-using AssetManagementWEBAPI.Entity;
+﻿
 using AssetManagementWEBAPI.Models;
 using AssetManagementWEBAPI.Repository;
-using Microsoft.AspNetCore.Mvc;
 
 namespace AssetManagementWEBAPI.Service
 {
@@ -27,26 +25,17 @@ namespace AssetManagementWEBAPI.Service
         {
             List<MachineModel> machines = _machineRepository.GetAllMachines();
 
-            Dictionary<string, List<string>> MachinesList = new Dictionary<string, List<string>>();
+            List<string>result = new List<string>();
 
             foreach (var machine in machines)
             {
-                foreach (var asset in machine.Asset)
+                foreach(var asset in machine.Asset)
                 {
-                    if (!MachinesList.ContainsKey(asset.AssetName))
-                    {
-                        MachinesList[asset.AssetName] = new List<string>();
-                    }
-                    MachinesList[asset.AssetName].Add(machine.MachineName);
+                    if (asset.AssetName == assetName)
+                        result.Add(machine.MachineName);
                 }
             }
-            List<string> MachineLists = new List<string>();
-            if (MachinesList.ContainsKey(assetName))
-            {
-                MachineLists = MachinesList[assetName].Select(
-                       machine => machine).ToList();
-            }
-            return MachineLists;
+            return result;
         }
 
         public List<MachineModel> GetMachinesWithLatestAssets()
@@ -54,6 +43,7 @@ namespace AssetManagementWEBAPI.Service
             List<MachineModel> machines = _machineRepository.GetAllMachines();
             List<MachineModel> result = new List<MachineModel>();
 
+            //Creating dictionary which will store the latest version of respective assets
             Dictionary<string, string> AssetsLatestVersionsDictionary = new Dictionary<string, string>();
 
             foreach (var machine in machines)
@@ -77,10 +67,11 @@ namespace AssetManagementWEBAPI.Service
                 }
             }
 
-            foreach (MachineModel machine in machines)
+            //Traversing on each machine, which uses latest version of all the assets
+            foreach (var machine in machines)
             {
                 bool isAllNewVersions = true;
-                foreach (AssetModel asset in machine.Asset)
+                foreach (var asset in machine.Asset)
                 {
                     string? latestAssetVersion = AssetsLatestVersionsDictionary.GetValueOrDefault(asset.AssetName);
                     if (latestAssetVersion != asset.AssetVersion)
@@ -91,6 +82,7 @@ namespace AssetManagementWEBAPI.Service
                 }
                 if (isAllNewVersions)
                 {
+                    //adding the machine to result which uses all the latest versions of assets
                     result.Add(machine);
                 }
             }

@@ -1,6 +1,4 @@
-﻿using AssetManagementWEBAPI.Models;
-
-namespace AssetManagementWEBAPI.Service
+﻿namespace AssetManagementWEBAPI.Service
 {
     public interface IFileScanner
     {

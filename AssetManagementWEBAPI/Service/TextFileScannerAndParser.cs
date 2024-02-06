@@ -1,7 +1,5 @@
-﻿using AssetManagementWEBAPI.Entity;
-using AssetManagementWEBAPI.Models;
-using System.Security.Cryptography.X509Certificates;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+﻿using AssetManagementWEBAPI.Models;
+
 
 namespace AssetManagementWEBAPI.Service
 {
