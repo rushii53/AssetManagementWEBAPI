@@ -16,8 +16,8 @@ builder.Services.Configure<DBModel>(builder.Configuration.GetSection("AssetManag
 
 builder.Services.AddSingleton<IFileScanner>(option => new TextFileScannerAndParser("C:\\Users\\Bart_rus.GLOBAL\\Documents\\AssetFile.txt"));
 builder.Services.AddSingleton<IMachineRepository,MachineRepository>();
-builder.Services.AddSingleton<MachineService,MachineService>();
-builder.Services.AddSingleton<MongoDbAssetManagement,MongoDbAssetManagement>();
+builder.Services.AddSingleton<IMachineService,MachineService>();
+builder.Services.AddSingleton<MongoDbAssetManagement>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
