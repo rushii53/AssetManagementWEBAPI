@@ -1,5 +1,6 @@
 ﻿using AssetManagementWEBAPI.Models;
 using AssetManagementWEBAPI.Repository;
+using AssetManagementWEBAPI.Service;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AssetManagementWEBAPI.Controllers
@@ -8,34 +9,34 @@ namespace AssetManagementWEBAPI.Controllers
     [Route("/api/machine/")]
     public class MachineController:ControllerBase
     {
-        private readonly IMachineRepository _machineRepository;
+        private readonly MachineService _machineService;
 
-        public MachineController(IMachineRepository machineRepository)
+        public MachineController(MachineService MachineService)
         {
-            _machineRepository = machineRepository;
+            _machineService = MachineService;
         }
 
         [HttpGet]
         public List<Machine> GetAllMachine()
         {
-            return _machineRepository.GetAllMachines();
+            return _machineService.GetAllMachines();
         }
 
         [HttpGet("{MachineName}")]
         public Machine GetMachine(string MachineName)
         {
-            return _machineRepository.GetMachine(MachineName);
+            return _machineService.GetMachineByMachineName(MachineName);
         }
 
         [HttpGet("asset/{assetName}")]
         public List<string> GetMachineNames(string assetName) {
-            return _machineRepository.GetMachineNamesUsingThisAsset(assetName);
+            return _machineService.GetMachineNamesUsingThisAsset(assetName);
         }
 
         [HttpGet("machines/")]
         public List<Machine> GetMachinesUsingAllLatestAssetVersions()
         {
-            return _machineRepository.GetMachinesWithLatestAssets();
+            return _machineService.GetMachinesWithLatestAssets();
         }
 
     }

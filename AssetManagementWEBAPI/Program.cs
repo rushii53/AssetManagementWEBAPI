@@ -13,6 +13,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddSingleton<IFileScanner>(option => new TextFileScannerAndParser("C:\\Users\\Bart_rus.GLOBAL\\Documents\\AssetFile.txt"));
 builder.Services.AddSingleton<IMachineRepository,MachineRepository>();
+builder.Services.AddSingleton<MachineService,MachineService>();
 
 var app = builder.Build();
 

@@ -40,8 +40,6 @@ namespace AssetManagementWEBAPI.Service
             }).ToList();
 
             GlobalAppConstants.AppConstants.Machines = machines;
-
-            
         }
     }
 
