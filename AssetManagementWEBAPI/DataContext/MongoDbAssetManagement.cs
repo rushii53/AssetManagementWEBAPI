@@ -8,7 +8,6 @@ namespace AssetManagementWEBAPI.DataContext
     public class MongoDbAssetManagement
     {
         public readonly IMongoCollection<Machine> _machineCollection;
-
         public MongoDbAssetManagement(
             IOptions<DBModel> mongodConnection)
         {

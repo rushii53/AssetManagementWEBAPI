@@ -8,8 +8,8 @@ namespace AssetManagementWEBAPI.Controllers
     [Route("/api/machine/")]
     public class MachineController:ControllerBase
     {
-        private readonly MachineService _machineService;
-        public MachineController(MachineService MachineService)
+        private readonly IMachineService _machineService;
+        public MachineController(IMachineService MachineService)
         {
             _machineService = MachineService;
         }

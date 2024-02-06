@@ -4,7 +4,7 @@ using AssetManagementWEBAPI.Repository;
 
 namespace AssetManagementWEBAPI.Service
 {
-    public class MachineService
+    public class MachineService:IMachineService
     {
         private readonly IMachineRepository _machineRepository;
 
