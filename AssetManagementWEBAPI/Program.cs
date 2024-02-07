@@ -14,7 +14,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.Configure<DBModel>(builder.Configuration.GetSection("MongoDB"));
 builder.Services.Configure<TextFileModel>(builder.Configuration.GetSection("TextFilePath"));
 builder.Services.AddSingleton<IMachineRepository,MachineMongoRepository>();
-builder.Services.AddSingleton<IMachineService,MachineService>();
+builder.Services.AddScoped<IMachineService,MachineService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

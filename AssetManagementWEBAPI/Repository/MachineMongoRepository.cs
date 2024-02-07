@@ -8,7 +8,6 @@ namespace AssetManagementWEBAPI.Repository
     public class  MachineMongoRepository: IMachineRepository
     {
        private readonly IMongoCollection<Machine> _machines;
-       
         public MachineMongoRepository(IOptions<DBModel>options)
         {
             var MongoConnection = new MongoClient(options.Value.ConnectionString);
@@ -21,7 +20,6 @@ namespace AssetManagementWEBAPI.Repository
             List<MachineModel> result = machineList.Select(m => new MachineModel { MachineName = m.MachineName, Asset = m.Asset.Select(a=>new AssetModel { AssetName = a.AssetName,AssetVersion = a.AssetVersion}).ToList() }).ToList();
             return result;
         }
-           
     }
 }
 

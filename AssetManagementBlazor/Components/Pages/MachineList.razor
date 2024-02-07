@@ -1,0 +1,48 @@
+﻿
+@rendermode InteractiveServer
+@if (Machines == null)
+{
+    <div class="spinner-border-sm"></div>
+}
+else
+{
+    <div class="container">
+        <div class="table">
+            <div class="table-header">
+                <div class="d-xxl-table-row">
+                    <div class="d-lg-table-cell fw-bolder" style="background-color: darkblue; color: white;">Machine Name</div>
+                </div>
+            </div>
+            <div class="table-info">
+                @foreach (var machine in Machines)
+                {
+                    <div class="d-xxl-table-row with-border" @onclick="()=>HandleClick(machine.MachineName)">
+                        <div class="d-xxl-table-cell">@machine.MachineName</div>
+                    </div>
+                    @if (IsMachineSelected[machine.MachineName])
+                    {
+                        <div class="container">
+                            <table>
+                                <thead>
+                                    <tr style="background-color:cornflowerblue;color:white;font:bolder;">
+                                        <td>Asset Name</td>
+                                        <td>Asset Version</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var asset in machine.Asset)
+                                    {
+                                        <tr>
+                                            <td>@asset.AssetName</td>
+                                            <td>@asset.AssetVersion</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+}

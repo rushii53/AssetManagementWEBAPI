@@ -1,4 +1,5 @@
 ﻿
+using AssetManagementWEBAPI.Entity;
 using AssetManagementWEBAPI.Models;
 using AssetManagementWEBAPI.Repository;
 
@@ -7,9 +8,10 @@ namespace AssetManagementWEBAPI.Service
     public class MachineService:IMachineService
     {
         private readonly List<MachineModel>?_machines;
-
+        private readonly IMachineRepository _machineRepository;
         public MachineService(IMachineRepository machineRepository)
         {
+            _machineRepository = machineRepository;
             _machines = machineRepository.GetAllMachines();
         }
 

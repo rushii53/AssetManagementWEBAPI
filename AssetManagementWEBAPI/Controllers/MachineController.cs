@@ -1,4 +1,5 @@
-﻿using AssetManagementWEBAPI.Models;
+﻿using AssetManagementWEBAPI.Entity;
+using AssetManagementWEBAPI.Models;
 using AssetManagementWEBAPI.Service;
 using Microsoft.AspNetCore.Mvc;
 
@@ -22,16 +23,17 @@ namespace AssetManagementWEBAPI.Controllers
                 var result = _machineService.GetAllMachines();
                 if (result.Count()==0)
                 {
-                    return Ok("Does not contain any machine");
+                    return Ok(new List<MachineModel>());
                 }
                 return Ok(result);
             }
             catch (Exception)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error");
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
 
         }
+
 
         [HttpGet("{MachineName}")]
         public ActionResult<MachineModel> GetMachine(string MachineName)
@@ -40,12 +42,12 @@ namespace AssetManagementWEBAPI.Controllers
             {
                 var result = _machineService.GetMachineByMachineName(MachineName);
                 if (result == null)
-                    return Ok("Machine not found");
+                    return Ok($"Machine: {MachineName} not found");
                 return Ok(result);
             }
             catch (Exception)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error");
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
 
         }
@@ -58,13 +60,13 @@ namespace AssetManagementWEBAPI.Controllers
                 var result = _machineService.GetMachineNamesUsingThisAsset(assetName);
                 if( result.Count() == 0)
                 {
-                    return Ok($"Asset: {assetName} not found");
+                    return Ok($"There is no machine which uses {assetName} asset");
                 }
                 return Ok(result);
             }
             catch (Exception)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError,"Internal Server Error");
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
             
         }
@@ -83,10 +85,9 @@ namespace AssetManagementWEBAPI.Controllers
             }
             catch (Exception)
             {
-                return StatusCode(StatusCodes.Status500InternalServerError, "Internal Server Error");
+                return StatusCode(StatusCodes.Status500InternalServerError);
             }
 
         }
-
     }
 }

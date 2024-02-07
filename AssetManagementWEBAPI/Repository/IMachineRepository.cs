@@ -5,6 +5,6 @@ namespace AssetManagementWEBAPI.Repository
 {
     public interface IMachineRepository
     {
-        public List<MachineModel> GetAllMachines();  
+        public List<MachineModel> GetAllMachines();
     }
 }

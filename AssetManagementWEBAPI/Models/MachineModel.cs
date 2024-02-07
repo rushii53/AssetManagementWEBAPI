@@ -13,6 +13,7 @@ namespace AssetManagementWEBAPI.Models
 
         public MachineModel(string machineName) {
             MachineName = machineName;
+            Asset = new List<AssetModel>();
         }
         public MachineModel(string? machineName, List<AssetModel>? asset) : this(machineName)
         {

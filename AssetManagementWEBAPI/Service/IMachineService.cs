@@ -1,4 +1,5 @@
-﻿using AssetManagementWEBAPI.Models;
+﻿using AssetManagementWEBAPI.Entity;
+using AssetManagementWEBAPI.Models;
 
 namespace AssetManagementWEBAPI.Service
 {

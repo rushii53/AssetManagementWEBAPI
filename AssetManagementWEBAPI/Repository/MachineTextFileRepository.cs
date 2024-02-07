@@ -1,4 +1,5 @@
-﻿using AssetManagementWEBAPI.Models;
+﻿using AssetManagementWEBAPI.Entity;
+using AssetManagementWEBAPI.Models;
 using Microsoft.Extensions.Options;
 
 namespace AssetManagementWEBAPI.Repository
@@ -35,5 +36,6 @@ namespace AssetManagementWEBAPI.Repository
         {
             return _machines;
         }
+        public MachineModel SaveMachine(Machine machine) { return null; }
     }
 }
