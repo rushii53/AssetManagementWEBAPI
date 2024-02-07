@@ -12,6 +12,8 @@ else
                 <div class="col">No.</div>
                 <div class="col">Machine Id</div>
                 <div class="col">Machine Name</div>
+                <div class="col"></div>
+
             </div>
             @if (Machines.Count == 0)
             {
@@ -21,10 +23,15 @@ else
             {
                 @foreach(var machine in Machines)
                 {
-                    <div class="row">
+                    <div class="row m-2">
                         <div class="col">@machine.MachineName</div>
                         <div class="col">@machine.MachineName</div>
                         <div class="col">@machine.MachineName</div>
+                        <div class="col">
+                            <button class="btn-success m-2">View</button>
+                            <button class="btn-warning m-2">Edit</button>
+                            <button class="btn-danger m-2">Delete</button>
+                        </div>
                     </div>
                 }
             }
