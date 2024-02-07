@@ -1,8 +1,25 @@
 ﻿@page "/"
+@rendermode InteractiveServer
 <PageTitle>Home</PageTitle>
 
 
 <div class="container">
-    <h1>List Of Available Machines!</h1>
-    <MachineList/>
+    <div class="container text-center">
+        @* <div class="border-info m-2 h-75">
+            <div class="row m-2">
+                <input class="col" @bind="machineName" @bind:event="oninput" placeholder="Enter Machine Name"/>
+                <button class="col btn btn-primary my-1 p-1">Search Machine By Machine Name</button>
+            </div>
+            <div class="row m-2">
+                <input class="col" @bind="assetName" @bind:event="oninput" placeholder="Enter Asset Name"/>
+                <button class="col btn btn-primary m-1">Search Machine By Asset Name</button>
+            </div>
+        </div> *@
+        <MachineList />
+    </div>
 </div>
+
+@code{
+    public string machineName;
+    public string assetName;
+}
