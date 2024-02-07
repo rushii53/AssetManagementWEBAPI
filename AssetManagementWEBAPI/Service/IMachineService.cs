@@ -6,7 +6,6 @@ namespace AssetManagementWEBAPI.Service
     {
         List<MachineModel> GetAllMachines();
         MachineModel GetMachineByMachineName(string machineName);
-
         List<string> GetMachineNamesUsingThisAsset(string assetName);
         List<MachineModel> GetMachinesWithLatestAssets();
     }

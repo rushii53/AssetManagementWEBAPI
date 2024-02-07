@@ -1,4 +1,5 @@
-﻿using AssetManagementWEBAPI.Models;
+﻿using AssetManagementWEBAPI.Entity;
+using AssetManagementWEBAPI.Models;
 using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
@@ -6,18 +7,19 @@ namespace AssetManagementWEBAPI.Repository
 {
     public class  MachineMongoRepository: IMachineRepository
     {
-       private readonly IMongoCollection<MachineModel> _machines;
+       private readonly IMongoCollection<Machine> _machines;
        
         public MachineMongoRepository(IOptions<DBModel>options)
         {
             var MongoConnection = new MongoClient(options.Value.ConnectionString);
             var MongoDatabase = MongoConnection.GetDatabase(options.Value.DatabaseName);
-            _machines = MongoDatabase.GetCollection<MachineModel>(options.Value.CollectionName);
+            _machines = MongoDatabase.GetCollection<Machine>(options.Value.CollectionName);
         }
         public List<MachineModel> GetAllMachines()
         {
-            List<MachineModel>machineModels = _machines.Find(_ => true).ToList();
-            return machineModels;
+            List<Machine> machineList = _machines.Find(_ => true).ToList();
+            List<MachineModel> result = machineList.Select(m => new MachineModel { MachineName = m.MachineName, Asset = m.Asset.Select(a=>new AssetModel { AssetName = a.AssetName,AssetVersion = a.AssetVersion}).ToList() }).ToList();
+            return result;
         }
            
     }

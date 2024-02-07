@@ -10,5 +10,6 @@
             AssetName = assetName;
             AssetVersion = assetVersion;
         }
+        public AssetModel() { }
     }
 }

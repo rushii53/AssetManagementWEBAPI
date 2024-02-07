@@ -3,6 +3,7 @@ using MongoDB.Bson.Serialization.Attributes;
 
 namespace AssetManagementWEBAPI.Entity
 {
+    [BsonIgnoreExtraElements]
     public class Machine
     {
         [BsonId]
