@@ -2,6 +2,7 @@
 using AssetManagementWEBAPI.Entity;
 using AssetManagementWEBAPI.Models;
 using AssetManagementWEBAPI.Repository;
+using MongoDB.Driver;
 
 namespace AssetManagementWEBAPI.Service
 {
@@ -87,6 +88,28 @@ namespace AssetManagementWEBAPI.Service
                 }
             }
             return result;
+        }
+        public bool SaveMachine(Machine machine)
+        {
+            var exstingMachine = _machineRepository.GetAllMachines().Where(m=>m.MachineName==machine.MachineName).FirstOrDefault();
+            if(exstingMachine != null)
+            {
+                return false;
+            }
+            return _machineRepository.SaveMachine(machine).Result;
+        }
+        public bool EditMachine(Machine machine)
+        {
+            var existingMachine = _machineRepository.GetMongoCollection().Find(m=>m.MachineName == machine.MachineName).FirstOrDefault();
+            if(existingMachine != null)
+            {
+                if(machine.MachineName != existingMachine.MachineName)
+                {
+                    existingMachine.MachineName = machine.MachineName;
+                }
+                return _machineRepository.EditMachine(existingMachine).Result;
+            }
+            return false;
         }
     }
 }

@@ -9,5 +9,7 @@ namespace AssetManagementWEBAPI.Service
         MachineModel GetMachineByMachineName(string machineName);
         List<MachineModel> GetMachineNamesUsingThisAsset(string assetName);
         List<MachineModel> GetMachinesWithLatestAssets();
+        bool SaveMachine(Machine machine);
+        bool EditMachine(Machine machine);
     }
 }

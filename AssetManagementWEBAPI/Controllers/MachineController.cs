@@ -89,5 +89,44 @@ namespace AssetManagementWEBAPI.Controllers
             }
 
         }
+        [HttpPost("save")]
+        public ActionResult SaveMachine(Machine machine)
+        {
+            try
+            {
+                var result = _machineService.SaveMachine(machine);
+                if (result)
+                {
+                    return Created();
+                   
+                }
+                else
+                {
+                    return Conflict("Machine already exist!");
+                }
+            }catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+        [HttpPut("edit/{machineName}")]
+        public ActionResult EditMachine(Machine machine)
+        {
+            try
+            {
+                var result = _machineService.EditMachine(machine);
+                if (result)
+                {
+                    return Ok();
+                }
+                else
+                {
+                    return NotFound();
+                }
+            }catch(Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

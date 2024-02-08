@@ -4,14 +4,14 @@ using Microsoft.Extensions.Options;
 
 namespace AssetManagementWEBAPI.Repository
 {
-    public class MachineTextFileRepository:IMachineRepository
+    public class MachineTextFileRepository
     {
         private readonly List<MachineModel> _machines;
         public MachineTextFileRepository(IOptions<TextFileModel>options)
         {
             List<GenericAssetData> genericAssetDatas = new List<GenericAssetData>();
 
-            using (var reader = new StreamReader(options.Value.Path_2))
+            using (var reader = new StreamReader(options.Value.Path_1))
             {
                 string line;
                 while ((line = reader.ReadLine()) != null)
