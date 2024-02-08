@@ -7,7 +7,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AssetManagementWEBAPI", "As
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AssetManagementTEST", "AssetManagementTEST\AssetManagementTEST.csproj", "{308B61FB-7132-4B4F-BEFC-066215E500D2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AssetManagementBlazor", "AssetManagementBlazor\AssetManagementBlazor.csproj", "{DF2AA0F3-F1BD-4F47-8F8C-BEF5A1E89BC8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AssetManagementBlazor", "AssetManagementBlazor\AssetManagementBlazor.csproj", "{DF2AA0F3-F1BD-4F47-8F8C-BEF5A1E89BC8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

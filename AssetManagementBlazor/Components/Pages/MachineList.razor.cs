@@ -1,6 +1,7 @@
 ﻿using AssetManagementBlazor.Models;
 using AssetManagementBlazor.Service;
 using Microsoft.AspNetCore.Components;
+using Microsoft.VisualBasic;
 
 namespace AssetManagementBlazor.Components.Pages
 {
@@ -8,19 +9,26 @@ namespace AssetManagementBlazor.Components.Pages
     {
         [Inject]
         public IMachineService MachineService { get; set; }
-        public List<MachineModel>Machines { get; set; }
+        [Parameter]
+        public List<MachineModel>?Machines { get; set; }
 
         public Dictionary<string,bool>IsMachineSelected { get; set; } = new Dictionary<string,bool>();
         protected override async Task OnInitializedAsync()
         {
-            Machines = (await MachineService.GetAllMachines()).ToList();
-
             foreach (var machine in Machines)
             {
-                IsMachineSelected[machine.MachineName] = false;
+                IsMachineSelected.Add(machine.MachineName, false);
             }
         }
 
+        protected override async Task OnParametersSetAsync()
+        {
+            IsMachineSelected = new Dictionary<string,bool>();
+            foreach (var machine in Machines)
+            {
+                IsMachineSelected.Add(machine.MachineName, false);
+            }
+        }
         public void HandleClick(string machineName)
         {
             if (IsMachineSelected[machineName])

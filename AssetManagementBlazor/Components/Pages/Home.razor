@@ -1,8 +1,28 @@
 ﻿@page "/"
+@rendermode InteractiveServer
 <PageTitle>Home</PageTitle>
 
 
+
 <div class="container">
-    <h1>List Of Available Machines!</h1>
-    <MachineList/>
+    <div class="container m-2">
+        <button class="btn-primary" @onclick="()=>GetAllMachines()">Get All Machines</button>
+        <button class="btn-primary" @onclick="()=>GetLatestMachines()">Get Machines Using Latest Assets</button>
+        <input @bind="machineName" @bind:event="oninput" placeholder="Enter Machine Name"/>
+        <button class="btn-primary" @onclick="()=>GetMachineByMachineName()">Search By Machine Name</button>
+        <input @bind="assetName" @bind:event="oninput" placeholder="Enter Asset Name"/>
+        <button class="btn-primary" @onclick="()=>GetMachineByAssetName()">Search By Asset Name</button>
+
+    </div>
+    <div class="container text-center">
+       
+        @if (Machines != null)
+        {
+            <MachineList Machines="Machines" />
+        }
+        else
+        {
+            <div class="spinner-grow"></div>
+        }
+    </div>
 </div>

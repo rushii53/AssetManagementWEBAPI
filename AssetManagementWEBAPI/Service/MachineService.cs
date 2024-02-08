@@ -21,19 +21,19 @@ namespace AssetManagementWEBAPI.Service
         }
         public MachineModel GetMachineByMachineName(string machineName)
         {
-            return _machines.Where(m => m.MachineName == machineName).First();
+            return _machines.Where(m => m.MachineName.ToLower() == machineName.ToLower()).First();
         }
-        public List<string> GetMachineNamesUsingThisAsset(string assetName)
+        public List<MachineModel> GetMachineNamesUsingThisAsset(string assetName)
         {
 
-            List<string>result = new List<string>();
+            List<MachineModel>result = new List<MachineModel>();
 
             foreach (var machine in _machines)
             {
                 foreach(var asset in machine.Asset)
                 {
-                    if (asset.AssetName == assetName)
-                        result.Add(machine.MachineName);
+                    if (asset.AssetName.ToLower() == assetName.ToLower())
+                        result.Add(machine);
                 }
             }
             return result;

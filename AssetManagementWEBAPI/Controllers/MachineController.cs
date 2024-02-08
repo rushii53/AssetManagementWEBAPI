@@ -35,14 +35,14 @@ namespace AssetManagementWEBAPI.Controllers
         }
 
 
-        [HttpGet("{MachineName}")]
-        public ActionResult<MachineModel> GetMachine(string MachineName)
+        [HttpGet("{machineName}")]
+        public ActionResult<MachineModel> GetMachine(string machineName)
         {
             try
             {
-                var result = _machineService.GetMachineByMachineName(MachineName);
+                var result = _machineService.GetMachineByMachineName(machineName);
                 if (result == null)
-                    return Ok($"Machine: {MachineName} not found");
+                    return Ok($"Machine: {machineName} not found");
                 return Ok(result);
             }
             catch (Exception)
@@ -53,7 +53,7 @@ namespace AssetManagementWEBAPI.Controllers
         }
 
         [HttpGet("asset/{assetName}")]
-        public ActionResult<List<string>> GetMachineNames(string assetName)
+        public ActionResult<List<MachineModel>> GetMachineNames(string assetName)
         {
             try
             {
@@ -71,7 +71,7 @@ namespace AssetManagementWEBAPI.Controllers
             
         }
 
-        [HttpGet("/machines/latest-assets")]
+        [HttpGet("latest-assets")]
         public ActionResult<List<MachineModel>> GetMachinesUsingAllLatestAssetVersions()
         {
             try
