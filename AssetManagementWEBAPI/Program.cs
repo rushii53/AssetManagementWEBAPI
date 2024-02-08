@@ -13,7 +13,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.Configure<DBModel>(builder.Configuration.GetSection("MongoDB"));
 builder.Services.Configure<TextFileModel>(builder.Configuration.GetSection("TextFilePath"));
-builder.Services.AddSingleton<IMachineRepository,MachineTextFileRepository>();
+builder.Services.AddSingleton<IMachineRepository,MachineMongoRepository>();
 builder.Services.AddScoped<IMachineService,MachineService>();
 var app = builder.Build();
 

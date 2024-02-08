@@ -6,7 +6,7 @@
 }
 else
 {
-    <div class="row bg-info m-2 p-2 fw-bolder text-white fs-5">
+    <div class="row m-2 p-2 fw-bolder text-white fs-5" style="background-color:darkblue">
         <div class="col">No.</div>
         <div class="col">Machine Id</div>
         <div class="col">Machine Name</div>
@@ -14,37 +14,27 @@ else
     </div>
     @if (Machines.Count == 0)
     {
-        <div class="row">Machine not found</div>
+        <div class="m-2 fs-6 row">Machines not found</div>
     }
     else
     {
+        int count = 1;
         @foreach(var machine in Machines)
         {
-            <div class="row m-2 border border-info">
-                <div class="col align-items-center"></div>
-                <div class="col align-items-center">@machine.MachineName</div>
-                <div class="col align-items-center">@machine.MachineName</div>
-                <div class="col align-items-center justify-content-center"><button @onclick="()=>HandleClick(machine.MachineName)" class="btn btn-primary">View Details</button></div>
-                
+            <div class="m-2 border border-dark">
+              <div class="row m-auto @(IsMachineSelected[machine.MachineName]?"fw-bolder bg-dark fs-6 text-white":"")">
+                    <div class="col">@count</div>
+                    <div class="col justify-content-center ">@machine.MachineId</div>
+                    <div class="col">@machine.MachineName</div>
+                    <div class="col "><button @onclick="()=>HandleClick(machine.MachineName)" class="btn btn-success">@(IsMachineSelected[machine.MachineName] ? "Hide Details" : "View Details")</button></div>
+               </div>
+
                 @if (IsMachineSelected[machine.MachineName])
                 {
-                    <div class="container p-lg-4">
-                        <div class="row border bg-primary text-white border-primary">
-                            <div class="col">Asset No.</div>
-                            <div class="col">Asset Name</div>
-                            <div class="col">Asset Version</div>
-                        </div>
-                        @for (int j = 0; j < machine.Asset.Count; j++)
-                        {
-                            <div class="row border border-dark">
-                                <div class="col align-items-center">@(j + 1)</div>
-                                <div class="col align-items-center">@machine.Asset[j].AssetName</div>
-                                <div class="col align-items-center">@machine.Asset[j].AssetVersion</div>
-                            </div>
-                        }
-                    </div>
+                    <AssetList Assets="machine.Asset"/>
                 }
             </div>
+            count++;
         }
     }
 }

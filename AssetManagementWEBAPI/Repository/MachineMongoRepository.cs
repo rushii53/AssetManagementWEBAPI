@@ -17,7 +17,7 @@ namespace AssetManagementWEBAPI.Repository
         public List<MachineModel> GetAllMachines()
         {
             List<Machine> machineList = _machines.Find(_ => true).ToList();
-            List<MachineModel> result = machineList.Select(m => new MachineModel { MachineName = m.MachineName, Asset = m.Asset.Select(a=>new AssetModel { AssetName = a.AssetName,AssetVersion = a.AssetVersion}).ToList() }).ToList();
+            List<MachineModel> result = machineList.Select(m => new MachineModel {MachineId=m.Id, MachineName = m.MachineName, Asset = m.Asset.Select(a=>new AssetModel { AssetName = a.AssetName,AssetVersion = a.AssetVersion}).ToList() }).ToList();
             return result;
         }
     }
