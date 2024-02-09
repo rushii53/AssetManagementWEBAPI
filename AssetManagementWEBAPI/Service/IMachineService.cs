@@ -5,11 +5,12 @@ namespace AssetManagementWEBAPI.Service
 {
     public interface IMachineService
     {
-        List<MachineModel> GetAllMachines();
-        MachineModel GetMachineByMachineName(string machineName);
-        List<MachineModel> GetMachineNamesUsingThisAsset(string assetName);
-        List<MachineModel> GetMachinesWithLatestAssets();
-        bool SaveMachine(Machine machine);
-        bool EditMachine(Machine machine);
+        List<string?> GetMachines(string? assetName,string? assetVersion,bool? latestAssets);
+        Machine GetMachine(string machineName);
+        List<string?> GetMachineAssets(string machineName);
+        List<string?> GetMachinesByAsset(string assetName);
+        List<Machine> GetMachinesWithLatestAssets();
+      /*  bool SaveMachine(Machine machine);
+        bool EditMachine(Machine machine);*/
     }
 }

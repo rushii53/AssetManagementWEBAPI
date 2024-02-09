@@ -6,7 +6,7 @@ namespace AssetManagementWEBAPI.Repository
 {
     public class MachineTextFileRepository
     {
-        private readonly List<MachineModel> _machines;
+        /*private readonly List<Machine> _machines;
         public MachineTextFileRepository(IOptions<TextFileModel>options)
         {
             List<GenericAssetData> genericAssetDatas = new List<GenericAssetData>();
@@ -36,6 +36,6 @@ namespace AssetManagementWEBAPI.Repository
         {
             return _machines;
         }
-        public MachineModel SaveMachine(Machine machine) { return null; }
+        public MachineModel SaveMachine(Machine machine) { return null; }*/
     }
 }

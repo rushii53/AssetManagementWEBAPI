@@ -1,14 +1,18 @@
 ﻿using AssetManagementWEBAPI.Entity;
-using AssetManagementWEBAPI.Models;
 using MongoDB.Driver;
 
 namespace AssetManagementWEBAPI.Repository
 {
     public interface IMachineRepository
     {
-        public List<MachineModel> GetAllMachines();
         public IMongoCollection<Machine> GetMongoCollection();
-        public Task<bool> SaveMachine(Machine machine);
-        public Task<bool> EditMachine(Machine machine);
+        public List<string?> GetMachines();
+        public List<string?> GetMachinesByAssetName(string assetName);
+        public List<string?> GetMachines(string asssetName, string assetVersion);
+        public Machine GetMachine(string machineName);
+        public List<string> GetMachineAssets(string machineName);
+        public List<string> GetMachinesByAsset(string assetsName);
+        /*public bool SaveMachine(Machine machine);
+        public bool EditMachine(Machine machine);*/
     }
 }

@@ -6,8 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace AssetManagementWEBAPI.Controllers
 {
     [ApiController]
-    [Route("/api/machine/")]
-    public class MachineController:ControllerBase
+    [Route("/api/machines/")]
+    public class MachineController : ControllerBase
     {
         private readonly IMachineService _machineService;
         public MachineController(IMachineService MachineService)
@@ -16,16 +16,17 @@ namespace AssetManagementWEBAPI.Controllers
         }
 
         [HttpGet]
-        public ActionResult<List<MachineModel>> GetAllMachines() {
-
+        public ActionResult<List<Machine>> GetMachines([FromQuery] string? assetName, [FromQuery] string? assetVersion, [FromQuery] bool? latestAssets)
+        {
             try
             {
-                var result = _machineService.GetAllMachines();
-                if (result.Count()==0)
+                var result = _machineService.GetMachines(assetName,assetVersion,latestAssets);
+
+                if (result != null)
                 {
-                    return Ok(new List<MachineModel>());
+                    return Ok(result);
                 }
-                return Ok(result);
+                return NotFound("Machines not found");
             }
             catch (Exception)
             {
@@ -36,14 +37,19 @@ namespace AssetManagementWEBAPI.Controllers
 
 
         [HttpGet("{machineName}")]
-        public ActionResult<MachineModel> GetMachine(string machineName)
+        public ActionResult<Machine> GetMachine(string machineName)
         {
             try
             {
-                var result = _machineService.GetMachineByMachineName(machineName);
-                if (result == null)
-                    return Ok($"Machine: {machineName} not found");
-                return Ok(result);
+                var result = _machineService.GetMachine(machineName);
+                if(result != null)
+                {
+                    return Ok(result);
+                }
+                else
+                {
+                    return NotFound("Machine not found");
+                }
             }
             catch (Exception)
             {
@@ -51,28 +57,28 @@ namespace AssetManagementWEBAPI.Controllers
             }
 
         }
-
-        [HttpGet("asset/{assetName}")]
-        public ActionResult<List<MachineModel>> GetMachineNames(string assetName)
+        [HttpGet("{machineName}/assets")]
+        public ActionResult<List<string>>GetMachineAssets(string machineName)
         {
             try
             {
-                var result = _machineService.GetMachineNamesUsingThisAsset(assetName);
-                if( result.Count() == 0)
+                var result = _machineService.GetMachineAssets(machineName);
+                if( result != null)
                 {
-                    return Ok($"There is no machine which uses {assetName} asset");
+                    return Ok(result);
                 }
-                return Ok(result);
-            }
-            catch (Exception)
+                else
+                {
+                    return NotFound("Machine not found");
+                }
+            }catch(Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
-            
         }
 
         [HttpGet("latest-assets")]
-        public ActionResult<List<MachineModel>> GetMachinesUsingAllLatestAssetVersions()
+        public ActionResult<List<Machine>> GetMachinesUsingAllLatestAssetVersions()
         {
             try
             {
@@ -89,7 +95,7 @@ namespace AssetManagementWEBAPI.Controllers
             }
 
         }
-        [HttpPost("save")]
+        /*[HttpPost("save")]
         public ActionResult SaveMachine(Machine machine)
         {
             try
@@ -127,6 +133,6 @@ namespace AssetManagementWEBAPI.Controllers
             {
                 return BadRequest(ex.Message);
             }
-        }
+        }*/
     }
 }

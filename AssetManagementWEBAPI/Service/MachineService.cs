@@ -1,6 +1,5 @@
 ﻿
 using AssetManagementWEBAPI.Entity;
-using AssetManagementWEBAPI.Models;
 using AssetManagementWEBAPI.Repository;
 using MongoDB.Driver;
 
@@ -8,46 +7,47 @@ namespace AssetManagementWEBAPI.Service
 {
     public class MachineService:IMachineService
     {
-        private readonly List<MachineModel>?_machines;
         private readonly IMachineRepository _machineRepository;
         public MachineService(IMachineRepository machineRepository)
         {
             _machineRepository = machineRepository;
-            _machines = machineRepository.GetAllMachines();
         }
 
-        public List<MachineModel> GetAllMachines()
+        public List<string?> GetMachines(string?assetName,string?assetVersion,bool?latestAssets)
         {
-            return _machines;
-        }
-        public MachineModel GetMachineByMachineName(string machineName)
-        {
-            return _machines.Where(m => m.MachineName.ToLower() == machineName.ToLower()).First();
-        }
-        public List<MachineModel> GetMachineNamesUsingThisAsset(string assetName)
-        {
-
-            List<MachineModel>result = new List<MachineModel>();
-
-            foreach (var machine in _machines)
-            {
-                foreach(var asset in machine.Asset)
-                {
-                    if (asset.AssetName.ToLower() == assetName.ToLower())
-                        result.Add(machine);
-                }
+            if(!string.IsNullOrWhiteSpace(assetName) && !string.IsNullOrEmpty(assetVersion)) {
+                return _machineRepository.GetMachines(assetName, assetVersion);
             }
-            return result;
+            else if(!string.IsNullOrEmpty(assetName))
+            {
+                return _machineRepository.GetMachines(assetName);
+            }
+            return _machineRepository.GetMachines();
+        }
+        public Machine GetMachine(string machineName)
+        {
+            return _machineRepository.GetMachine(machineName);
+        }
+        public List<string> GetMachinesByAsset(string assetName)
+        {
+
+            return _machineRepository.GetMachinesByAsset(assetName);
+        }
+        public List<string>GetMachineAssets(string machineName)
+        {
+            return _machineRepository.GetMachineAssets(machineName);
         }
 
-        public List<MachineModel> GetMachinesWithLatestAssets()
-        {
-            List<MachineModel> result = new List<MachineModel>();
 
+        //Get Machines which are uisng all the current latest version of assets
+        public List<Machine> GetMachinesWithLatestAssets()
+        {
+            List<Machine> machines = _machineRepository.GetMongoCollection().Find(_=>true).ToList();
+            List<Machine> result = new List<Machine>();
             //Creating dictionary which will store the latest version of respective assets
             Dictionary<string, string> AssetsLatestVersionsDictionary = new Dictionary<string, string>();
 
-            foreach (var machine in _machines)
+            foreach (var machine in machines)
             {
                 foreach (var asset in machine.Asset)
                 {
@@ -69,7 +69,7 @@ namespace AssetManagementWEBAPI.Service
             }
 
             //Traversing on each machine, which uses latest version of all the assets
-            foreach (var machine in _machines)
+            foreach (var machine in machines)
             {
                 bool isAllNewVersions = true;
                 foreach (var asset in machine.Asset)
@@ -89,7 +89,7 @@ namespace AssetManagementWEBAPI.Service
             }
             return result;
         }
-        public bool SaveMachine(Machine machine)
+        /*public bool SaveMachine(Machine machine)
         {
             var exstingMachine = _machineRepository.GetAllMachines().Where(m=>m.MachineName==machine.MachineName).FirstOrDefault();
             if(exstingMachine != null)
@@ -110,6 +110,6 @@ namespace AssetManagementWEBAPI.Service
                 return _machineRepository.EditMachine(existingMachine).Result;
             }
             return false;
-        }
+        }*/
     }
 }
