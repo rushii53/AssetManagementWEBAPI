@@ -14,40 +14,42 @@ namespace AssetManagementWEBAPI.Repository
             var MongoDatabase = MongoConnection.GetDatabase(options.Value.DatabaseName);
             _machineCollection = MongoDatabase.GetCollection<Machine>(options.Value.CollectionName);
         }
-        public List<string?> GetMachines()
+        public List<string> GetMachines()
         {
-            List<string?> machines = _machineCollection.Find(_ => true).ToList().Select(m=>m.MachineName).ToList();
+            List<string> machines = _machineCollection.Find(_ => true).ToList().Select(m=>m.MachineName).ToList();
             return machines;
         }
-        public List<string?>GetMachines(string?assetName)
+        public List<string>GetMachinesByAssetName(string assetName)
         {
-            List<string?>machines=_machineCollection.AsQueryable()
-                .Where(m=>m.Asset.Any(a=>a.AssetName==assetName))
+            List<string>machines=_machineCollection.AsQueryable()
+                .Where(m=>m.Asset.Any(a=>a.AssetName.ToLower()==assetName.ToLower()))
                 .Select(m=>m.MachineName) .ToList();
             return machines;
         }
-        public List<string?>GetMachines(string? assetName,string?assetVersion)
+
+        public List<string>GetMachinesByAssetVersion(string assetVersion)
         {
-            List<string?> machines = _machineCollection.AsQueryable()
-                .Where(m => m.Asset.Any(a => a.AssetName == assetName && a.AssetVersion == assetVersion))
+            List<string> machines = _machineCollection.Find(m => m.Asset
+            .Any(a => a.AssetVersion.ToLower() == assetVersion.ToLower())).ToList()
+            .Select(m => m.MachineName).ToList();
+            return machines;
+        }
+        public List<string>GetMachinesByAssetNameAndAssetVersion(string? assetName,string?assetVersion)
+        {
+            List<string> machines = _machineCollection.AsQueryable()
+                .Where(m => m.Asset.Any(a => a.AssetName.ToLower() == assetName.ToLower() && a.AssetVersion.ToLower() == assetVersion.ToLower()))
                 .Select(m => m.MachineName)
                 .ToList();
             return machines;
         }
        
-        public List<string?> GetMachineAssets(string machineName)
+        public List<Asset> GetMachineAssets(string machineName)
         {
             Machine? machine = _machineCollection.AsQueryable()
                                         .Where(machine => machine.MachineName.ToLower() == machineName.ToLower())
                                         .FirstOrDefault();
-            List<string?> result = machine != null ? machine.Asset.Select(a =>a.AssetName).ToList() : null;
+            List<Asset> result = machine != null ? machine.Asset.ToList() : null;
             return result;
-        }
-        public List<string> GetMachinesByAsset(string assetName)
-        {
-            List<string> machines =_machineCollection.AsQueryable().Where(m=>m.Asset.Any(a=>a.AssetName.ToLower() == assetName.ToLower())).Select(m=>m.MachineName).ToList();
-           
-            return machines.Count>0?machines:null;
         }
 
         public Machine GetMachine(string machineName) { 
@@ -55,9 +57,25 @@ namespace AssetManagementWEBAPI.Repository
             return result;
         }
 
-        public IMongoCollection<Machine> GetMongoCollection()
+        public List<string> GetMachinesWithLatestAssets()
         {
-            return _machineCollection; 
+            var latestAssets = _machineCollection.AsQueryable()
+                .SelectMany(m => m.Asset)
+                .GroupBy(a => a.AssetName)
+                .Select(group => new
+                {
+                    Name = group.Key,
+                    LatestVersion = group.Max(asset=>asset.AssetVersion)
+                }).ToList();
+
+            var machinesList = _machineCollection.AsQueryable()
+                .Where(m => m.Asset.All(
+                        asset => latestAssets.Any(
+                            latestAsset => latestAsset.Name == asset.AssetName && latestAsset.LatestVersion == asset.AssetVersion
+                            )))
+                .Select(machine=>machine.MachineName).ToList();
+
+            return machinesList;
         }
 
         /*public bool SaveMachine(Machine machine)

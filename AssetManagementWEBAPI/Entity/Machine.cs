@@ -8,16 +8,18 @@ namespace AssetManagementWEBAPI.Entity
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public string? Id { get; set; }
+        public string Id { get; set; }
         [BsonElement("machineName")]
-        public string? MachineName { get; set; }
+        public string MachineName { get; set; }
         [BsonElement("asset")]
         public List<Asset>? Asset { get; set; }
 
+        public Machine() { }
         public Machine(string machineName)
         {
             MachineName = machineName;
             Asset = new List<Asset>();
         }
+
     }
 }
