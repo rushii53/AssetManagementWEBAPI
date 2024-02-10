@@ -1,92 +1,47 @@
 ﻿
 using AssetManagementWEBAPI.Entity;
-using AssetManagementWEBAPI.Models;
 using AssetManagementWEBAPI.Repository;
+using MongoDB.Driver;
 
 namespace AssetManagementWEBAPI.Service
 {
     public class MachineService:IMachineService
     {
-        private readonly List<MachineModel>?_machines;
         private readonly IMachineRepository _machineRepository;
         public MachineService(IMachineRepository machineRepository)
         {
             _machineRepository = machineRepository;
-            _machines = machineRepository.GetAllMachines();
         }
 
-        public List<MachineModel> GetAllMachines()
+        public List<string?> GetMachines(string?assetName,string?assetVersion,bool latestAssetsFlag)
         {
-            return _machines;
-        }
-        public MachineModel GetMachineByMachineName(string machineName)
-        {
-            return _machines.Where(m => m.MachineName.ToLower() == machineName.ToLower()).First();
-        }
-        public List<MachineModel> GetMachineNamesUsingThisAsset(string assetName)
-        {
+            List<string> machines = null;
 
-            List<MachineModel>result = new List<MachineModel>();
+            if (!string.IsNullOrEmpty(assetName) && !string.IsNullOrEmpty(assetVersion))
+                machines = _machineRepository.GetMachinesByAssetNameAndAssetVersion(assetName, assetVersion);
+            else if (!string.IsNullOrEmpty(assetName) && !string.IsNullOrWhiteSpace(assetName))
+                machines = _machineRepository.GetMachinesByAssetName(assetName);
+            else if (!string.IsNullOrEmpty(assetVersion) && !string.IsNullOrWhiteSpace(assetVersion))
+                machines = _machineRepository.GetMachinesByAssetVersion(assetVersion);
+            else 
+                machines = _machineRepository.GetMachines();
 
-            foreach (var machine in _machines)
+            if (latestAssetsFlag)
             {
-                foreach(var asset in machine.Asset)
-                {
-                    if (asset.AssetName.ToLower() == assetName.ToLower())
-                        result.Add(machine);
-                }
+                var machinesWithLatestAssets = _machineRepository.GetMachinesWithLatestAssets();
+                machines = machines.Where(machine => machinesWithLatestAssets.Any(
+                        latestMachine => latestMachine.Equals(machine)
+                    )).ToList();
             }
-            return result;
+            return machines;
         }
-
-        public List<MachineModel> GetMachinesWithLatestAssets()
+        public Machine GetMachine(string machineName)
         {
-            List<MachineModel> result = new List<MachineModel>();
-
-            //Creating dictionary which will store the latest version of respective assets
-            Dictionary<string, string> AssetsLatestVersionsDictionary = new Dictionary<string, string>();
-
-            foreach (var machine in _machines)
-            {
-                foreach (var asset in machine.Asset)
-                {
-                    if (AssetsLatestVersionsDictionary.ContainsKey(asset.AssetName))
-                    {
-                        string assetVersion = AssetsLatestVersionsDictionary[asset.AssetName];
-                        int version = int.Parse(assetVersion.Trim().Substring(1));
-
-                        int currentVersion = int.Parse(asset.AssetVersion.Substring(1));
-
-                        if (currentVersion > version)
-                            AssetsLatestVersionsDictionary[asset.AssetName] = asset.AssetVersion;
-                    }
-                    else
-                    {
-                        AssetsLatestVersionsDictionary[asset.AssetName] = asset.AssetVersion;
-                    }
-                }
-            }
-
-            //Traversing on each machine, which uses latest version of all the assets
-            foreach (var machine in _machines)
-            {
-                bool isAllNewVersions = true;
-                foreach (var asset in machine.Asset)
-                {
-                    string? latestAssetVersion = AssetsLatestVersionsDictionary.GetValueOrDefault(asset.AssetName);
-                    if (latestAssetVersion != asset.AssetVersion)
-                    {
-                        isAllNewVersions = false;
-                        break;
-                    }
-                }
-                if (isAllNewVersions)
-                {
-                    //adding the machine to result which uses all the latest versions of assets
-                    result.Add(machine);
-                }
-            }
-            return result;
+            return _machineRepository.GetMachine(machineName);
+        }
+        public List<Asset>GetMachineAssets(string machineName)
+        {
+            return _machineRepository.GetMachineAssets(machineName);
         }
     }
 }
