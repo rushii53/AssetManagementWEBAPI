@@ -1,5 +1,4 @@
 ﻿using AssetManagementWEBAPI.Entity;
-using AssetManagementWEBAPI.Models;
 using AssetManagementWEBAPI.Service;
 using Microsoft.AspNetCore.Mvc;
 

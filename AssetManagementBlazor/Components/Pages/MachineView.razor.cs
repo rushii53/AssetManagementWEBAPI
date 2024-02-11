@@ -1,28 +1,31 @@
 ﻿using AssetManagementBlazor.Models;
+using AssetManagementBlazor.Service;
+using Microsoft.AspNetCore.Components;
 
 namespace AssetManagementBlazor.Components.Pages
 {
-    public partial class MachineView
+    public partial class MachineView:ComponentBase
     {
-        public MachineModel Model = new MachineModel()
+        [Inject]
+        public  IMachineService _machineService { get; set; }
+        public MachineView() { }
+        public MachineView(IMachineService machineService)
         {
-            MachineName = "C300",
-            Assets = new List<AssetModel>()
+            _machineService = machineService;
+        }
+
+        public MachineModel Model = null;
+
+        [Parameter]
+        public string machineName { get; set; }
+
+        protected override async Task OnInitializedAsync()
+        {
+            if(!string.IsNullOrEmpty(machineName))
             {
-                new AssetModel(){
-                    AssetName="Cutter Head",
-                    AssetVersion="S10"
-                },
-                new AssetModel(){
-                    AssetName="Clamping Fixture",
-                    AssetVersion="S7"
-                },
-                new AssetModel(){
-                    AssetName="Blade Handle",
-                    AssetVersion="S4"
-                }
+                Model = await _machineService.GetMachine(machineName);
             }
-        };
+        }
     }
 
 }

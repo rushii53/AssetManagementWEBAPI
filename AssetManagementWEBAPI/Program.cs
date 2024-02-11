@@ -1,6 +1,7 @@
 using AssetManagementWEBAPI.Models;
 using AssetManagementWEBAPI.Repository;
 using AssetManagementWEBAPI.Service;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,13 @@ builder.Services.AddSingleton<IMachineRepository,MachineMongoRepository>();
 builder.Services.AddScoped<IMachineService,MachineService>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+builder.Services.AddSwaggerGen(option =>
+{
+    var xmlCommentFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlCommentFilePath = Path.Combine(AppContext.BaseDirectory, xmlCommentFile);
+    option.IncludeXmlComments(xmlCommentFilePath);
+});
 
 var app = builder.Build();
 
