@@ -1,0 +1,35 @@
+﻿@page "/"
+@rendermode InteractiveServer
+<div class="row">
+    
+    <div class="row d-flex shadow-lg m-2 p-2 align-items-center justify-content-center h-100">
+        <div class="col shadow-lg m-2 p-2 d-flex align-items-center fw-bold justify-content-center h-100">
+            Total Machines @_machines.Count
+        </div>
+        <input type="text" class="form-control col mx-2" id="assetNameInput" placeholder="Enter Asset Name">
+        <input type="text" class="form-control col mx-2" id="assetVersionInput" placeholder="Enter Asset Version">
+        <button type="button" class="btn col btn-primary mx-3" onclick="applyFilter()">Apply Filter</button>
+        <button type="button" class="btn col btn-primary mx-3" onclick="applyFilter()">Machines with latest Assets</button>
+    </div>
+</div>
+<ul class="list-group shadow-lg">
+    <li class="list-group-item bg-gradient fw-bold bg-primary text-white">
+        <div class="row">
+            <div class="col">No.</div>
+            <div class="col">Machine Name</div>
+            <div class="col"></div>
+        </div>
+    </li>
+    @foreach(var (machine,index) in _machines.Select((value,i)=>(value,i+1)))
+    {
+        <li class="list-group-item">
+            <div class="row d-flex align-items-center">
+                <div class="col">@index</div>
+                <div class="col">@machine</div>
+                <div class="col">
+                    <button type="button" class="btn btn-primary outline-0">View</button>
+                </div>
+            </div>
+        </li>
+    }
+</ul>

@@ -48,7 +48,7 @@ namespace AssetManagementWEBAPI.Controllers
                 }
                 else
                 {
-                    return NotFound("Machine not found");
+                    return NotFound($"Machine:{machineName} not found");
                 }
             }
             catch (Exception)
@@ -69,7 +69,7 @@ namespace AssetManagementWEBAPI.Controllers
                 }
                 else
                 {
-                    return NotFound("Machine not found");
+                    return NotFound($"Machine:{machineName} not found");
                 }
             }catch(Exception ex)
             {
