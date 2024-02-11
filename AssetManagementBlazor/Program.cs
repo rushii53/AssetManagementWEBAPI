@@ -8,7 +8,11 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 //Dependency Injection
-builder.Services.AddHttpClient<IMachineService,MachineService>(clinet=>clinet.BaseAddress=new Uri("https://localhost:7130/"));
+builder.Services.AddHttpClient<IMachineService, MachineService>(client =>
+{
+    client.BaseAddress = new Uri("https://localhost:7130");
+});
+builder.Services.AddScoped<IMachineService, MachineService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

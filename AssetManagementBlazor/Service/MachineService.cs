@@ -1,45 +1,26 @@
 ﻿using AssetManagementBlazor.Models;
+using Microsoft.AspNetCore.Components;
 
 namespace AssetManagementBlazor.Service
 {
     public class MachineService:IMachineService
     {
-        private HttpClient _httpClient;
+        private HttpClient _httpClient { get; set; }
         public MachineService(HttpClient httpClient)
         {
             _httpClient = httpClient;
         }
-        public async Task<IEnumerable<MachineModel>> GetAllMachines()
+        public async Task<List<string>> GetMachines(string?assetName,string?assetVersion,bool latestAssets)
         {
-            return await _httpClient.GetFromJsonAsync<MachineModel[]>("api/machine");
+            return await _httpClient.GetFromJsonAsync<List<string>>($"https://localhost:7130/api/v1/machines?assetName={assetName}&assetVersion={assetVersion}&&latestAssets={latestAssets}");
         }
-        public async Task<IEnumerable<MachineModel>> GetMachinesUsesLatestAssets()
+        public async Task<MachineModel>GetMachine(string machineName)
         {
-            return await _httpClient.GetFromJsonAsync<List<MachineModel>>("api/machine/latest-assets");
+            return await _httpClient.GetFromJsonAsync<MachineModel>($"https://localhost:7130/api/v1/machines/{machineName}");
         }
-        public async Task<IEnumerable<MachineModel>> GetMachineByAssetName(string assetName)
+        public async Task<List<string>>GetMachineAssets(string machineName)
         {
-            try
-            {
-                return await _httpClient.GetFromJsonAsync<List<MachineModel>>($"api/machine/asset/{assetName.Trim()}");
-            }catch(Exception ex)
-            {
-                return new List<MachineModel>();
-            }
-        }
-
-        public async Task<IEnumerable<MachineModel>> GetMachineByMachineName(string machineName)
-        {
-            try
-            {
-                var result = await _httpClient.GetFromJsonAsync<MachineModel>($"api/machine/{machineName.Trim()}");
-                List<MachineModel> ans = new List<MachineModel>();
-                ans.Add(result);
-                return ans;
-            }catch(Exception ex)
-            {
-                return new List<MachineModel>();
-            }
+            return await _httpClient.GetFromJsonAsync<List<string>>($"https://localhost:7130/api/v1/machines/{machineName}/assets");
         }
     }
 }

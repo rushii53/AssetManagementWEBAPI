@@ -77,31 +77,6 @@ namespace AssetManagementWEBAPI.Repository
 
             return machinesList;
         }
-
-        /*public bool SaveMachine(Machine machine)
-       {
-           try
-           {
-               _machineCollection.InsertOneAsync(machine);
-               return true;
-           }catch(Exception e)
-           {
-               return false;
-           }
-       }*/
-
-        /*public bool EditMachine(Machine machine)
-        {
-            try { 
-                var filter = Builders<Machine>.Filter.Eq(x => x.MachineName, machine.MachineName);
-                var update = Builders<Machine>.Update.Set(x => x,machine);
-                var updatedResult = _machineCollection.UpdateOne(filter,update);
-                return updatedResult.ModifiedCount>0?true:false;
-            }catch(Exception e)
-            {
-                return false;
-            }
-        }*/
     }
 }
 
