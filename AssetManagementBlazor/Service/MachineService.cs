@@ -1,5 +1,6 @@
 ﻿using AssetManagementBlazor.Models;
 using Microsoft.AspNetCore.Components;
+using System.Text.Json;
 
 namespace AssetManagementBlazor.Service
 {
@@ -12,7 +13,25 @@ namespace AssetManagementBlazor.Service
         }
         public async Task<List<string>> GetMachines(string?assetName,string?assetVersion,bool latestAssets)
         {
-            return await _httpClient.GetFromJsonAsync<List<string>>($"https://localhost:7130/api/v1/machines?assetName={assetName}&assetVersion={assetVersion}&&latestAssets={latestAssets}");
+            try
+            {
+                HttpResponseMessage response = await _httpClient.GetAsync($"https://localhost:7130/api/v1/machines?assetName={assetName}&assetVersion={assetVersion}&&latestAssets={latestAssets}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    string result = await response.Content.ReadAsStringAsync();
+                    List<string> machine = JsonSerializer.Deserialize<List<string>>(result);
+                    return machine;
+                }
+                else
+                {
+                    return new List<string>();
+                }
+            }catch(Exception ex)
+            {
+                return new List<string>();
+            }
+
         }
         public async Task<MachineModel>GetMachine(string machineName)
         {
