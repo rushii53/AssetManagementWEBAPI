@@ -14,7 +14,7 @@ namespace AssetManagementBlazor.Components.Pages
             _machineService = machineService;
         }
 
-        public MachineModel Model = null;
+        public MachineModel Machine = null;
 
         [Parameter]
         public string machineName { get; set; }
@@ -23,7 +23,7 @@ namespace AssetManagementBlazor.Components.Pages
         {
             if(!string.IsNullOrEmpty(machineName))
             {
-                Model = await _machineService.GetMachine(machineName);
+                Machine = await _machineService.GetMachine(machineName);
             }
         }
     }
