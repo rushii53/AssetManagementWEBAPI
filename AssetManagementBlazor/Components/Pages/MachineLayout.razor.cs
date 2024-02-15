@@ -12,24 +12,36 @@ namespace AssetManagementBlazor.Components.Pages
         public MachineLayout(IMachineService machineService) {
             _machineService = machineService;
         }
-        public List<string> _machines = new List<string>();
+        public List<string> _machines;
         public MachineModel machine = new MachineModel();
         public string? assetName = null;
         public string? assetVersion = null;
         public string machineName;
         protected override async Task OnInitializedAsync()
         {
-            _machines = await _machineService.GetMachines(null,null,false);
+            ApiResponse<List<string>> response = await _machineService.GetMachines(null, null, false);
+            if(response.Success)
+            {
+                _machines = response.Data;
+            }
         }
         
         public async void GetMachines()
         {
-            _machines = await _machineService.GetMachines(assetName,assetVersion,false);
+            ApiResponse<List<string>> response = await _machineService.GetMachines(assetName, assetVersion, false);
+            if (response.Success)
+            {
+                _machines = response.Data;
+            }
             StateHasChanged();
         }
         public async void GetMachinesWithLatestAssets()
         {
-            _machines = await _machineService.GetMachines(assetName,assetVersion,true);
+            ApiResponse<List<string>> response = await _machineService.GetMachines(assetName, assetVersion, true);
+            if (response.Success)
+            {
+                _machines = response.Data;
+            }
             StateHasChanged();
         }
         public void NavigateToMachinePage(string machineName)

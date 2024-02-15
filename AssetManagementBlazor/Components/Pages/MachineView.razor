@@ -1,11 +1,11 @@
 ﻿@page "/machine/{machineName}"
-@if(Model!=null){
+@if(Machine!=null){
 <div class="container m-4 p-2">
     <div class="shadow-lg p-3">
         <div class="row d-flex">
-            <div class="col fw-bolder">Machine: @Model.MachineName</div>
-            <div class="col">Machine Id: @Model.MachineName</div>
-            <div class="col">Total Assets: @Model.Asset.Count</div>
+            <div class="col fw-bolder">Machine: @Machine.MachineName</div>
+            <div class="col">Machine Id: @Machine.MachineName</div>
+            <div class="col">Total Assets: @Machine.Asset.Count</div>
         </div>
     </div>
     <div class="row p-3">
@@ -17,7 +17,7 @@
                     <div class="col">Asset Version</div>
                 </div>
             </li>
-            @foreach (var (asset, index) in Model.Asset.Select((value, i) => (value, i + 1)))
+            @foreach (var (asset, index) in Machine.Asset.Select((value, i) => (value, i + 1)))
             {
                 <li class="list-group-item">
                     <div class="row d-flex align-items-center">
@@ -29,5 +29,9 @@
             }
         </ul>
     </div>
-</div>
+    </div>
+}
+else
+{
+    <h1>Machine Not Found</h1>
 }
