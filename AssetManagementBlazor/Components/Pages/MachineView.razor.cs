@@ -8,22 +8,26 @@ namespace AssetManagementBlazor.Components.Pages
     {
         [Inject]
         public  IMachineService _machineService { get; set; }
+
         public MachineView() { }
         public MachineView(IMachineService machineService)
         {
             _machineService = machineService;
         }
-
-        public MachineModel Machine = null;
-
         [Parameter]
         public string machineName { get; set; }
+
+        public MachineModel Machine { get; set; }
 
         protected override async Task OnInitializedAsync()
         {
             if(!string.IsNullOrEmpty(machineName))
             {
-                Machine = await _machineService.GetMachine(machineName);
+                ApiResponse<MachineModel>response = await _machineService.GetMachine(machineName);
+                if (response.Success)
+                {
+                    Machine = response.Data;
+                }
             }
         }
     }
