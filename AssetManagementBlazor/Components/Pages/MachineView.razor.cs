@@ -14,7 +14,6 @@ namespace AssetManagementBlazor.Components.Pages
         {
             _machineService = machineService;
         }
-
         [Parameter]
         public string machineName { get; set; }
 
