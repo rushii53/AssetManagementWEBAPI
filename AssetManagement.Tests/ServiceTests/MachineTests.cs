@@ -2,11 +2,6 @@
 using AssetManagementWEBAPI.Repository;
 using AssetManagementWEBAPI.Service;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AssetManagement.Tests.ServiceTests
 {
@@ -20,7 +15,7 @@ namespace AssetManagement.Tests.ServiceTests
         }
 
         [Fact]
-        public void Get_Machine_By_Providing_Machine_Name()
+        public void GetMachine_Return_Machine_By_Giving_Machine_Name()
         {
             #region Arragne
             string machineName = "M1";
@@ -48,7 +43,28 @@ namespace AssetManagement.Tests.ServiceTests
         }
 
         [Fact]
-        public void Get_Names_Of_Machines_By_Providing_AssetName()
+        public void GetMachine_Returns_List_Of_Machine_Names_When_Machines_Found()
+        {
+            #region Arrange
+            string? assetName = null;
+            string? assetVersion = null;
+            bool latestAsset = false;
+            List<string?> expectedResult = new List<string?>() { "M1", "M2" };
+
+            _machineRepository.Setup(repo => repo.GetMachines()).Returns(expectedResult);
+            #endregion
+
+            #region Act
+            var actual = _machineService.GetMachines(assetName, assetVersion, latestAsset);
+            #endregion
+
+            #region Assert
+            Assert.Equal(expectedResult, actual);
+            #endregion
+        }
+
+        [Fact]
+        public void GetMachine_Returns_List_Of_Machine_Names_When_Asset_Name_Found()
         {
             #region Arrange
             string assetName = "A1";
@@ -68,7 +84,7 @@ namespace AssetManagement.Tests.ServiceTests
         }
 
         [Fact]
-        public void Get_Names_Of_Machines_By_Providing_AssetName_And_AssetVersion()
+        public void GetMachine_Returns_List_Of_Machine_Names_When_Asset_Name_And_Asset_Version_Found()
         {
             #region Arrange
             string assetName = "A1";
@@ -89,7 +105,7 @@ namespace AssetManagement.Tests.ServiceTests
             #endregion
         }
         [Fact]
-        public void Get_Names_Of_Machines_By_Providing_AssetName_AssetVersion_LatestAssetFlag()
+        public void GetMachine_Returns_List_Of_Machine_Names_When_Asset_Name_And_Asset_Version_And_LatestAssetFlag_Found()
         {
             #region Arrange
             string assetName = "A1";
@@ -109,6 +125,28 @@ namespace AssetManagement.Tests.ServiceTests
 
             #region Assert
             Assert.Equal(expectedResult, actual);
+            #endregion
+        }
+
+        [Fact]
+        public void GetMachineAssets_Returns_List_Of_Asset_Names_When_Machine_Name_Found()
+        {
+            #region Arrange
+            string machineName = "M1";
+            List<Asset> expectedResult = new List<Asset> {
+                new Asset{AssetName="A1",AssetVersion="V1"},
+                new Asset{AssetName="A2",AssetVersion="V2"}
+            };
+            
+            _machineRepository.Setup(repo=>repo.GetMachineAssets(machineName)).Returns(expectedResult);
+            #endregion
+
+            #region Act
+            var actual = _machineService.GetMachineAssets(machineName);
+            #endregion
+
+            #region Assert
+            Assert.Equal(expectedResult,actual);
             #endregion
         }
     }

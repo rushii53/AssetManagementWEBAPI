@@ -28,7 +28,7 @@ namespace AssetManagementWEBAPI.Controllers
             {
                 var result = _machineService.GetMachines(assetName,assetVersion,latestAssets);
 
-                if (result != null)
+                if (result != null && result.Count!=0)
                 {
                     return Ok(result);
                 }
@@ -75,12 +75,12 @@ namespace AssetManagementWEBAPI.Controllers
         /// <response code="500">Internal server error</response>
         /// <returns>A list of machine assets</returns>
         [HttpGet("{machineName}/assets")]
-        public ActionResult<List<string>>GetMachineAssets(string machineName)
+        public ActionResult<List<Asset>>GetMachineAssets(string machineName)
         {
             try
             {
                 var result = _machineService.GetMachineAssets(machineName);
-                if( result != null)
+                if( result != null && result.Count!=0)
                 {
                     return Ok(result);
                 }

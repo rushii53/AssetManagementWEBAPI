@@ -29,7 +29,6 @@
 
   <ItemGroup>
     <Folder Include="Builders\" />
-    <Folder Include="RepositoryTests\" />
   </ItemGroup>
 
 </Project>
