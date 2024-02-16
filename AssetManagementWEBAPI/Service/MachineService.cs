@@ -29,9 +29,7 @@ namespace AssetManagementWEBAPI.Service
             if (latestAssetsFlag)
             {
                 var machinesWithLatestAssets = _machineRepository.GetMachinesWithLatestAssets();
-                machines = machines.Where(machine => machinesWithLatestAssets.Any(
-                        latestMachine => latestMachine.Equals(machine)
-                    )).ToList();
+                machines = machines.Intersect(machinesWithLatestAssets).ToList();
             }
             return machines;
         }
