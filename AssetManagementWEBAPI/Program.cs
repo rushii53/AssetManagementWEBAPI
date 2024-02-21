@@ -1,7 +1,11 @@
 using AssetManagementWEBAPI.Models;
 using AssetManagementWEBAPI.Repository;
 using AssetManagementWEBAPI.Service;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,6 +20,26 @@ builder.Services.Configure<DBModel>(builder.Configuration.GetSection("MongoDB"))
 builder.Services.Configure<TextFileModel>(builder.Configuration.GetSection("TextFilePath"));
 builder.Services.AddSingleton<IMachineRepository,MachineMongoRepository>();
 builder.Services.AddScoped<IMachineService,MachineService>();
+builder.Services.AddScoped<IUserService,UserService>();
+
+//Jwt Authentication
+var key = Encoding.ASCII.GetBytes(builder.Configuration.GetSection("Jwt:Key").ToString());
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(key),
+        };
+    });
+
+//end
+
+builder.Services.AddAuthorization();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
@@ -37,6 +61,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

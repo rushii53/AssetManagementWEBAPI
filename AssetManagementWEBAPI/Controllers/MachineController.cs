@@ -1,10 +1,11 @@
 ﻿using AssetManagementWEBAPI.Entity;
 using AssetManagementWEBAPI.Service;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AssetManagementWEBAPI.Controllers
 {
-
+    [Authorize]
     [ApiController]
     [Route("/api/v1/machines/")]
     public class MachineControllerV1 : ControllerBase
