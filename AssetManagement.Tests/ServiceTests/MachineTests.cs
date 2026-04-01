@@ -8,10 +8,11 @@ namespace AssetManagement.Tests.ServiceTests
     public class MachineTests
     {
         private readonly Mock<IMachineRepository> _machineRepository = new();
+        private readonly Mock<Serilog.ILogger> _logger = new();
         private readonly MachineService _machineService;
 
         public MachineTests() { 
-            _machineService = new MachineService(_machineRepository.Object);
+            _machineService = new MachineService(_machineRepository.Object, _logger.Object);
         }
 
         [Fact]

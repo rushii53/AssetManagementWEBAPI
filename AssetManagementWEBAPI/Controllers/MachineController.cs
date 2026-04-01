@@ -1,6 +1,7 @@
 ﻿using AssetManagementWEBAPI.Entity;
 using AssetManagementWEBAPI.Service;
 using Microsoft.AspNetCore.Mvc;
+using Serilog;
 
 namespace AssetManagementWEBAPI.Controllers
 {
@@ -10,13 +11,15 @@ namespace AssetManagementWEBAPI.Controllers
     public class MachineControllerV1 : ControllerBase
     {
         private readonly IMachineService _machineService;
-        public MachineControllerV1(IMachineService MachineService)
+        private readonly Serilog.ILogger _logger;
+        public MachineControllerV1(IMachineService MachineService, Serilog.ILogger logger)
         {
             _machineService = MachineService;
+            _logger = logger;
         }
         /// <summary> Gets the list of machine names that are using a specific asset and series number</summary>
         /// <param name="assetName">The name of the asset to search for</param>
-        /// <param name="seriesNumber">The series number of the asset to search for</param>
+        /// <param name="assetVersion">The series number of the asset to search for</param>
         /// <response code="200">Returns the list of machine names that match the specified asset and series number</response>
         /// <response code="404">The specified asset name or series number does not exist</response>
         /// <response code="500">Internal server error</response>
@@ -24,18 +27,22 @@ namespace AssetManagementWEBAPI.Controllers
         [HttpGet]
         public ActionResult<List<string>> GetMachines([FromQuery] string? assetName, [FromQuery] string? assetVersion, [FromQuery] bool latestAssets)
         {
+            _logger.Information("GetMachines API called with assetName={AssetName}, assetVersion={AssetVersion}, latestAssets={Latest}", assetName, assetVersion, latestAssets);
             try
             {
                 var result = _machineService.GetMachines(assetName,assetVersion,latestAssets);
 
                 if (result != null && result.Count!=0)
                 {
+                    _logger.Information("GetMachines returning {Count} machines", result.Count);
                     return Ok(result);
                 }
+                _logger.Warning("GetMachines found no machines for assetName={AssetName}, assetVersion={AssetVersion}", assetName, assetVersion);
                 return NotFound("Machines not found");
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.Error(ex, "Unhandled exception in GetMachines for assetName={AssetName}, assetVersion={AssetVersion}", assetName, assetVersion);
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
 
@@ -50,20 +57,24 @@ namespace AssetManagementWEBAPI.Controllers
         [HttpGet("{machineName}")]
         public ActionResult<Machine> GetMachine(string machineName)
         {
+            _logger.Information("GetMachine API called for {MachineName}", machineName);
             try
             {
                 var result = _machineService.GetMachine(machineName);
                 if(result != null)
                 {
+                    _logger.Information("GetMachine found machine {MachineName}", machineName);
                     return Ok(result);
                 }
                 else
                 {
+                    _logger.Warning("GetMachine did not find machine {MachineName}", machineName);
                     return NotFound($"Machine:{machineName} not found");
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                _logger.Error(ex, "Unhandled exception in GetMachine for {MachineName}", machineName);
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
 
@@ -77,19 +88,23 @@ namespace AssetManagementWEBAPI.Controllers
         [HttpGet("{machineName}/assets")]
         public ActionResult<List<Asset>>GetMachineAssets(string machineName)
         {
+            _logger.Information("GetMachineAssets API called for {MachineName}", machineName);
             try
             {
                 var result = _machineService.GetMachineAssets(machineName);
                 if( result != null && result.Count!=0)
                 {
+                    _logger.Information("GetMachineAssets returning {Count} assets for {MachineName}", result.Count, machineName);
                     return Ok(result);
                 }
                 else
                 {
+                    _logger.Warning("GetMachineAssets did not find assets for {MachineName}", machineName);
                     return NotFound($"Machine:{machineName} not found");
                 }
             }catch(Exception ex)
             {
+                _logger.Error(ex, "Unhandled exception in GetMachineAssets for {MachineName}", machineName);
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
         }

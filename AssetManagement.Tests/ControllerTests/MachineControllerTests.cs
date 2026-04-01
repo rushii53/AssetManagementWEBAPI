@@ -1,26 +1,21 @@
 ﻿using AssetManagementWEBAPI.Controllers;
 using AssetManagementWEBAPI.Entity;
 using AssetManagementWEBAPI.Service;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Xunit.Sdk;
+using Serilog;
 
 namespace AssetManagement.Tests.ControllerTests
 {
     public class MachineControllerTests
     {
         private Mock<IMachineService> _machineServiceMock = new Mock<IMachineService>();
+        private Mock<ILogger> _loggerMock = new Mock<ILogger>();
         private MachineControllerV1 _machineController;
 
         public MachineControllerTests()
         {
-            _machineController = new MachineControllerV1(_machineServiceMock.Object);
+            _machineController = new MachineControllerV1(_machineServiceMock.Object, _loggerMock.Object);
         }
 
         [Fact]
@@ -32,10 +27,10 @@ namespace AssetManagement.Tests.ControllerTests
             _machineServiceMock.Setup(service => service.GetMachines(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>())).Returns(expectedResult);
             #endregion
             #region Act
-            var actionResult = _machineController.GetMachines(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>());
+            var actionResult = _machineController.GetMachines(null, null, false);
             #endregion
             #region Assert
-            var okResult = Assert.IsType<OkObjectResult>(actionResult.Result);
+            var okResult = Assert.IsType<OkObjectResult>(actionResult);
             Assert.Equal(expectedResult, okResult.Value);
             #endregion
         }
@@ -49,10 +44,10 @@ namespace AssetManagement.Tests.ControllerTests
             _machineServiceMock.Setup(service => service.GetMachines(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>())).Returns(expectedResult);
             #endregion
             #region Act
-            var actionResult = _machineController.GetMachines(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>());
+            var actionResult = _machineController.GetMachines(null, null, false);
             #endregion
             #region Assert
-            var okResult = Assert.IsType<NotFoundObjectResult>(actionResult.Result);
+            var okResult = Assert.IsType<NotFoundObjectResult>(actionResult);
             #endregion
         }
 
@@ -74,7 +69,7 @@ namespace AssetManagement.Tests.ControllerTests
             var actionResult = _machineController.GetMachine(machineName);
             #endregion
             #region Assert
-            var actual = Assert.IsType<OkObjectResult>(actionResult.Result);
+            var actual = Assert.IsType<OkObjectResult>(actionResult);
             Assert.Equal(expectedResult, actual.Value);
             #endregion
         }
@@ -95,7 +90,7 @@ namespace AssetManagement.Tests.ControllerTests
             var actionResult = _machineController.GetMachineAssets(machineName);
             #endregion
             #region Assert
-            var actual = Assert.IsType<OkObjectResult>(actionResult.Result);
+            var actual = Assert.IsType<OkObjectResult>(actionResult);
             Assert.Equal(expectedResult, actual.Value);
             #endregion
         }

@@ -1,5 +1,4 @@
 ﻿using AssetManagementWEBAPI.Entity;
-using MongoDB.Driver;
 
 namespace AssetManagementWEBAPI.Repository
 {
