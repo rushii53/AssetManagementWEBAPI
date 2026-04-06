@@ -4,9 +4,9 @@ using System.Text.Json;
 
 namespace AssetManagementBlazor.Service
 {
-    public class MachineService:IMachineService
+    public class MachineService : IMachineService
     {
-        private  HttpClient _httpClient { get; set; }
+        private HttpClient _httpClient { get; set; }
         private readonly Serilog.ILogger _logger;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
@@ -18,18 +18,17 @@ namespace AssetManagementBlazor.Service
         }
 
 
-        public async Task<ApiResponse<List<string>>> GetMachines(string?assetName,string?assetVersion,bool latestAssets)
+        public async Task<ApiResponse<List<string>>> GetMachines(string? assetName, string? assetVersion, bool latestAssets)
         {
             _logger.Information("GetMachines called with assetName={AssetName}, assetVersion={AssetVersion}, latestAssets={Latest}", assetName, assetVersion, latestAssets);
             try
             {
-                var correlationId = _httpContextAccessor.HttpContext?.Request.Headers["X-Correlation-ID"].ToString();
-                if (!string.IsNullOrEmpty(correlationId))
-                {
-                    _logger.Debug("Forwarding call with CorrelationId={CorrelationId}", correlationId);
-                }
+                var request = new HttpRequestMessage(
+                    HttpMethod.Get,
+                    $"https://localhost:7130/api/v1/machines?assetName={assetName}&assetVersion={assetVersion}&&latestAssets={latestAssets}"
+                );
 
-                HttpResponseMessage response = await _httpClient.GetAsync($"https://localhost:7130/api/v1/machines?assetName={assetName}&assetVersion={assetVersion}&&latestAssets={latestAssets}");
+                HttpResponseMessage response = await _httpClient.SendAsync(request);
 
                 _logger.Information("Remote API returned status {StatusCode} for GetMachines", response.StatusCode);
 
@@ -65,12 +64,15 @@ namespace AssetManagementBlazor.Service
         }
 
 
-        public async Task<ApiResponse<MachineModel>>GetMachine(string machineName)
+        public async Task<ApiResponse<MachineModel>> GetMachine(string machineName)
         {
             _logger.Information("GetMachine called for {MachineName}", machineName);
             try
             {
-                HttpResponseMessage response = await _httpClient.GetAsync($"https://localhost:7130/api/v1/machines/{machineName}");
+                var request = new HttpRequestMessage(HttpMethod.Get, $"https://localhost:7130/api/v1/machines/{machineName}");
+
+                HttpResponseMessage response = await _httpClient.SendAsync(request);
+
                 _logger.Information("Remote API returned status {StatusCode} for GetMachine {MachineName}", response.StatusCode, machineName);
                 if (response.IsSuccessStatusCode)
                 {
@@ -79,7 +81,7 @@ namespace AssetManagementBlazor.Service
                     _logger.Information("Deserialized machine {MachineName} from API response", machineName);
                     return new ApiResponse<MachineModel>(machine); ;
                 }
-                else if(response.StatusCode == HttpStatusCode.NotFound)
+                else if (response.StatusCode == HttpStatusCode.NotFound)
                 {
                     _logger.Warning("GetMachine {MachineName} returned NotFound", machineName);
                     return new ApiResponse<MachineModel>("Machine Not Found");
@@ -90,7 +92,8 @@ namespace AssetManagementBlazor.Service
                     return new ApiResponse<MachineModel>($"Error: {response.StatusCode}");
                 }
             }
-            catch(HttpRequestException error) {
+            catch (HttpRequestException error)
+            {
                 _logger.Error(error, "Network error while calling GetMachine {MachineName}", machineName);
                 return new ApiResponse<MachineModel>($"Network Error: {error.Message}");
             }
@@ -102,12 +105,20 @@ namespace AssetManagementBlazor.Service
         }
 
 
-        public async Task<List<string>>GetMachineAssets(string machineName)
+        public async Task<List<string>> GetMachineAssets(string machineName)
         {
             _logger.Information("GetMachineAssets called for {MachineName}", machineName);
             try
             {
-                var result = await _httpClient.GetFromJsonAsync<List<string>>($"https://localhost:7130/api/v1/machines/{machineName}/assets");
+                var request = new HttpRequestMessage(
+                    HttpMethod.Get,
+                    $"https://localhost:7130/api/v1/machines/{machineName}/assets"
+                );
+
+                HttpResponseMessage response = await _httpClient.SendAsync(request);
+
+                var result = JsonSerializer.Deserialize<List<string>>(await response.Content.ReadAsStringAsync());
+
                 _logger.Information("GetMachineAssets returned {Count} assets for {MachineName}", result?.Count ?? 0, machineName);
                 return result;
             }

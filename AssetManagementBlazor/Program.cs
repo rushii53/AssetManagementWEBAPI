@@ -1,30 +1,54 @@
 using AssetManagementBlazor.Components;
-using AssetManagementBlazor.Service;
 using AssetManagementBlazor.MessageHandlers;
+using AssetManagementBlazor.Service;
+using OpenTelemetry.Exporter;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using Serilog;
-using Serilog.Formatting.Compact;
-using System.Net.Http.Headers;
-using Serilog.Sinks.Grafana.Loki;
+using Serilog.Sinks.OpenTelemetry;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure Serilog early
-Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Information()
-    .WriteTo.Console(new CompactJsonFormatter())
-    .WriteTo.File(new CompactJsonFormatter(), "logs/assetmanagement-client-.json", restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information, shared: true, rollingInterval: RollingInterval.Day)
+var resourceBuilder = ResourceBuilder.CreateDefault()
+    .AddService(serviceName: "asset-management-app", serviceVersion: "1.0.0");
 
-    .WriteTo.GrafanaLoki(
-        "http://localhost:3100",
-        new[]
+#region Logging
+Log.Logger = new LoggerConfiguration()
+    .Enrich.FromLogContext()
+    .WriteTo.OpenTelemetry(options =>
+    {
+        options.RestrictedToMinimumLevel = Serilog.Events.LogEventLevel.Information;
+        options.Endpoint = "http://localhost:4318/v1/logs"; // HTTP, not gRPC
+        options.Protocol = OtlpProtocol.HttpProtobuf;
+        options.ResourceAttributes = new Dictionary<string, object>
         {
-            new LokiLabel { Key = "app", Value = "assetmanagement-client" },
-        },
-        textFormatter: new RenderedCompactJsonFormatter()
-    )
+            ["service.name"] = "asset-management-app",
+            ["service.version"] = "1.0.0"
+        };
+    })
     .CreateLogger();
 
+builder.Logging.ClearProviders();
 builder.Host.UseSerilog();
+
+
+builder.Services.AddOpenTelemetry()
+    .ConfigureResource(resource => resource.AddService("asset-management-app"))
+    .WithTracing(tracing => tracing
+        .SetResourceBuilder(resourceBuilder)
+        .AddAspNetCoreInstrumentation(options =>
+        {
+            options.RecordException = true;
+        })
+        .AddHttpClientInstrumentation() // auto injects trace context into outgoing HTTP calls
+        .SetSampler(new ParentBasedSampler(new TraceIdRatioBasedSampler(1.0))) // adjust later
+        .AddOtlpExporter(otlp =>
+        {
+            otlp.Endpoint = new Uri("http://localhost:4317"); // FIXED
+            otlp.Protocol = OtlpExportProtocol.Grpc;
+        })
+    );
+#endregion
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
@@ -39,8 +63,8 @@ builder.Services.AddHttpClient<IMachineService, MachineService>(client =>
 {
     client.BaseAddress = new Uri("https://localhost:7130");
     // ensure we send correlation id header if present in ambient call context
-    client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-}).AddHttpMessageHandler<CorrelationIdForwardingHandler>();
+    //client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+});
 
 builder.Services.AddSingleton<Serilog.ILogger>(Log.Logger);
 builder.Services.AddScoped<IMachineService, MachineService>();

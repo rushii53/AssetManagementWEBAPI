@@ -1,35 +1,63 @@
 using AssetManagementWEBAPI.Models;
 using AssetManagementWEBAPI.Repository;
 using AssetManagementWEBAPI.Service;
+using OpenTelemetry.Exporter;
+using OpenTelemetry.Logs;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Trace;
 using Serilog;
-using Serilog.Formatting.Compact;
-using Serilog.Sinks.Grafana.Loki;
+using Serilog.Sinks.OpenTelemetry;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configure Serilog early
-var logger = new LoggerConfiguration()
-    .MinimumLevel.Information()
-    .WriteTo.Console(new CompactJsonFormatter())
-    // Optional file sink for persisted logs (daily rolling)
-    .WriteTo.File(new CompactJsonFormatter(), "logs/assetmanagement-service-.json", restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information, shared: true, rollingInterval: RollingInterval.Day)
-    .WriteTo.GrafanaLoki(
-        "http://localhost:3100",
-        new[]
+#region OTel configuration
+
+#region Logging
+Log.Logger = new LoggerConfiguration()
+    .Enrich.FromLogContext()
+    .Enrich.WithProperty("service.name", "asset-management-service")
+    .Enrich.WithProperty("service.version", "1.0.0")
+    .WriteTo.Console()
+    .WriteTo.OpenTelemetry(options =>
+    {
+        options.RestrictedToMinimumLevel = Serilog.Events.LogEventLevel.Information;
+        options.Endpoint = "http://localhost:4318/v1/logs"; // HTTP, not gRPC
+        options.Protocol = OtlpProtocol.HttpProtobuf;
+        options.ResourceAttributes = new Dictionary<string, object>
         {
-            new LokiLabel { Key = "app", Value = "assetmanagement-service" },
-        },
-        textFormatter: new RenderedCompactJsonFormatter()
-    )
+            ["service.name"] = "asset-management-service",
+            ["service.version"] = "1.0.0"
+        };
+    })
     .CreateLogger();
 
-// Set the global logger
-Log.Logger = logger;
-
+builder.Logging.ClearProviders();
 builder.Host.UseSerilog();
+#endregion
 
-// Add services to the container.
+#region Trace config
+
+var resourceBuilder = ResourceBuilder.CreateDefault()
+    .AddService(serviceName: "asset-management-service", serviceVersion: "1.0.0");
+
+builder.Services.AddOpenTelemetry()
+    .WithTracing(tracing => tracing
+        .SetResourceBuilder(resourceBuilder)
+        .AddAspNetCoreInstrumentation(options =>
+        {
+            options.RecordException = true;
+        })
+        .AddHttpClientInstrumentation()
+        .SetSampler(new ParentBasedSampler(new TraceIdRatioBasedSampler(1.0))) // adjust later
+        .AddOtlpExporter(otlp =>
+        {
+            otlp.Endpoint = new Uri("http://localhost:4317"); // FIXED
+            otlp.Protocol = OtlpExportProtocol.Grpc;
+        })
+    );
+#endregion
+#endregion
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -39,8 +67,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.Configure<DBModel>(builder.Configuration.GetSection("MongoDB"));
 builder.Services.Configure<TextFileModel>(builder.Configuration.GetSection("TextFilePath"));
 builder.Services.AddSingleton<IMachineRepository, MachineTextFileRepository>();
-builder.Services.AddSingleton<Serilog.ILogger>(_ => logger);
 builder.Services.AddScoped<IMachineService, MachineService>();
+builder.Services.AddSingleton<Serilog.ILogger>(Log.Logger);
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
@@ -61,19 +89,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-// Add correlation id middleware and Serilog request logging
-app.UseMiddleware<AssetManagementWEBAPI.Middleware.CorrelationIdMiddleware>();
-app.UseSerilogRequestLogging(options =>
-{
-    options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
-    {
-        if (httpContext.Request.Headers.TryGetValue("X-Correlation-ID", out var cid))
-        {
-            diagnosticContext.Set("CorrelationId", cid.ToString());
-        }
-    };
-});
 
 app.UseAuthorization();
 
