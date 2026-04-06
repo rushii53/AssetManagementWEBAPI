@@ -1,5 +1,4 @@
 using AssetManagementBlazor.Components;
-using AssetManagementBlazor.MessageHandlers;
 using AssetManagementBlazor.Service;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Resources;
